@@ -2,10 +2,8 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=240,height=282,user-scalable=no,maximum-scale=1.0,initial-scale=1.0" />
   <title>Discogs R1 Live Manager</title>
-
-  <!-- Reines natives CSS – Tailwind CDN entfernt. Designsystem im Dokumentkopf. -->
   <style>
     /* R1 Design Tokens */
     :root{
@@ -26,18 +24,32 @@
       --shadow-2:0 14px 38px rgba(0,0,0,.45);
     }
 
-    /* Global Reset & Base */
-    *,*::before,*::after{box-sizing:border-box}
-    html,body{height:100%}
-    body{
+    /* Force exact Rabbit R1 viewport sizing */
+    html, body {
+      width:240px;
+      height:282px;
       margin:0;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
-      -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+      padding:0;
+      overflow:hidden; /* prevent scrolling */
       background: radial-gradient(1200px 800px at 70% -10%, rgba(255,102,0,.08), transparent 60%), var(--r1-bg);
       color:var(--r1-text);
       line-height:1.6;
       letter-spacing:.2px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+      -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
     }
+
+    /* App container must fit exactly and be centered */
+    #app-container {
+      width:240px;
+      height:282px;
+      margin:0 auto;
+      padding: 12px 10px 12px; /* tighter padding to avoid overflow */
+      box-sizing:border-box;
+      overflow:hidden;
+      display:block;
+    }
+
     img{display:block; max-width:100%}
     a{color:var(--r1-neon); text-decoration:none}
 
@@ -48,57 +60,59 @@
     .stack-8 > * + *{margin-top: 2rem}
 
     /* Header */
-    .app-header{ text-align:center; padding: 10px 0 18px }
+    .app-header{ text-align:center; padding: 6px 0 10px }
     .app-title{
-      margin:0; font-size: clamp(28px, 4.6vw, 42px); font-weight:900; letter-spacing:.3px;
+      margin:0; font-size: 22px; font-weight:900; letter-spacing:.3px;
       background: linear-gradient(90deg, var(--r1-neon), var(--r1-neon-2));
       -webkit-background-clip:text; background-clip:text; color:transparent;
       text-shadow: 0 0 22px rgba(255,102,0,.25);
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
     }
-    .app-sub{ margin:.35rem 0 0; color:var(--r1-dim); font-size: .92rem }
+    .app-sub{ margin:.2rem 0 0; color:var(--r1-dim); font-size: .8rem }
 
     /* Cards / Surfaces */
     .card{ background: linear-gradient(180deg, var(--r1-card), var(--r1-elev)); border:1px solid var(--r1-border); border-radius:var(--radius-xl); box-shadow:var(--shadow-1) }
-    .card.p{ padding: 20px }
+    .card.p{ padding: 12px }
 
     /* Inputs */
-    .field{ width:100%; background:#0f1016; color:var(--r1-text); border:2px solid var(--r1-border); border-radius:var(--radius-lg); padding:14px 14px; outline:none; transition: .2s border-color, .2s box-shadow, .2s transform }
+    .field{ width:100%; background:#0f1016; color:var(--r1-text); border:2px solid var(--r1-border); border-radius:var(--radius-lg); padding:10px 12px; outline:none; transition: .2s border-color, .2s box-shadow, .2s transform }
     .field::placeholder{ color:#7b7b86 }
     .field:focus{ border-color:var(--r1-neon); box-shadow:0 0 0 3px rgba(255,102,0,.25); transform: translateY(-1px) }
 
     /* Buttons */
     .btn{ display:inline-flex; align-items:center; justify-content:center; gap:.5rem; border-radius:var(--r1-neon); font-weight:700; cursor:pointer; user-select:none; transition:.2s transform, .2s box-shadow, .2s filter }
     .btn-block{ width:100% }
-    .btn-primary{ background: linear-gradient(180deg, var(--r1-neon), #e25700); color:#fff; border:none; border-radius:var(--radius-lg); padding:14px 16px; box-shadow:0 10px 24px rgba(255,102,0,.25) }
+    .btn-primary{ background: linear-gradient(180deg, var(--r1-neon), #e25700); color:#fff; border:none; border-radius:var(--radius-lg); padding:12px 12px; box-shadow:0 10px 24px rgba(255,102,0,.25) }
     .btn-primary:hover{ transform: translateY(-2px); filter:saturate(1.06) }
     .btn-primary:active{ transform: translateY(0) }
-    .btn-ghost{ background:#1b1c27; color:#fff; border:1px solid var(--r1-border); border-radius:var(--radius-lg); padding:12px 14px }
+    .btn-ghost{ background:#1b1c27; color:#fff; border:1px solid var(--r1-border); border-radius:var(--radius-lg); padding:10px 12px }
     .btn-ghost:hover{ background:#222336; border-color:#3b3b4a }
-    .btn-danger{ background: linear-gradient(180deg, var(--r1-danger), #c73c41); color:#fff; border:none; border-radius:var(--radius-lg); padding:12px 14px }
+    .btn-danger{ background: linear-gradient(180deg, var(--r1-danger), #c73c41); color:#fff; border:none; border-radius:var(--radius-lg); padding:10px 12px }
 
     /* Tabs */
-    .tabs{ display:flex; gap:8px; background:#171722; padding:8px; border-radius:20px; border:1px solid var(--r1-border) }
-    .tab{ flex:1; padding:10px 12px; border-radius:12px; color:#cfcfd6; background:transparent; border:0; cursor:pointer }
+    .tabs{ display:flex; gap:6px; background:#171722; padding:6px; border-radius:16px; border:1px solid var(--r1-border) }
+    .tab{ flex:1; padding:8px 8px; border-radius:12px; color:#cfcfd6; background:transparent; border:0; cursor:pointer; font-size:12px }
     .tab.active{ background:var(--r1-neon); color:#fff }
     .tab:not(.active):hover{ background:#212235 }
 
     /* Collection list */
-    .grid{ display:grid; gap:12px }
-    .record{ display:flex; gap:12px; align-items:center; padding:12px; border:1px solid var(--r1-border); background: linear-gradient(180deg, #171822, #14141c); border-radius:14px; transition:.18s background,.18s transform,.18s border-color; cursor:pointer }
+    .view{ overflow:auto; max-height: calc(282px - 140px); } /* prevent overflow beyond viewport */
+    .grid{ display:grid; gap:8px }
+    .record{ display:flex; gap:8px; align-items:center; padding:8px; border:1px solid var(--r1-border); background: linear-gradient(180deg, #171822, #14141c); border-radius:14px; transition:.18s background,.18s transform,.18s border-color; cursor:pointer }
     .record:hover{ background:#1c1d28; border-color:#3a3a49; transform: translateY(-1px) }
-    .record img{ width:52px; height:52px; border-radius:10px; object-fit:cover; border:1px solid #2d2d39 }
+    .record img{ width:44px; height:44px; border-radius:10px; object-fit:cover; border:1px solid #2d2d39 }
     .record .meta{ min-width:0; flex:1 }
     .title{ font-weight:800; color:#f0f0f3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
-    .sub{ color:#9b9ba6; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
-    .tag{ color:var(--r1-neon); font-size:12px; font-weight:700 }
+    .sub{ color:#9b9ba6; font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+    .tag{ color:var(--r1-neon); font-size:11px; font-weight:700 }
 
     /* Scanner */
     .scan-frame{ position:relative; aspect-ratio:16/9; background:black; border-radius:14px; overflow:hidden; display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow-1) }
-    .scan-frame .neon{ position:absolute; inset:0; border:3px dashed var(--r1-neon); opacity:.85; margin:12px; border-radius:14px; pointer-events:none }
-    .scan-status{ position:absolute; top:8px; left:8px; font-size:12px; background:rgba(0,0,0,.55); padding:4px 6px; border-radius:8px }
+    .scan-frame .neon{ position:absolute; inset:0; border:3px dashed var(--r1-neon); opacity:.85; margin:8px; border-radius:14px; pointer-events:none }
+    .scan-status{ position:absolute; top:6px; left:6px; font-size:12px; background:rgba(0,0,0,.55); padding:4px 6px; border-radius:8px }
 
     /* Result boxes */
-    .result{ margin-top:14px; padding:14px; background:#101018; border:1px solid var(--r1-neon); border-radius:14px; display:none }
+    .result{ margin-top:10px; padding:10px; background:#101018; border:1px solid var(--r1-neon); border-radius:14px; display:none }
     .result.show{ display:block }
 
     /* Utility visibility */
@@ -113,78 +127,71 @@
     .pt-2{padding-top:.5rem}
     .pb-4{padding-bottom:1rem}
   </style>
-
-  <!-- ZXing für Barcode Scan (beibehalten) -->
-  <script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.20.0/umd/index.min.js"></script>
 </head>
 <body>
-  <div id="app-container" class="container stack-6">
+  <!-- ZXing für Barcode Scan (beibehalten) -->
+  <script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.20.0/umd/index.min.js"></script>
+  <div class="container stack-6" id="app-container">
     <!-- Header -->
     <header class="app-header">
       <h1 class="app-title">DISCOGS R1 LIVE</h1>
       <p class="app-sub">Manage &amp; Scan Your Vinyls</p>
     </header>
-
     <!-- 1) Auth View -->
-    <div id="auth-view" class="card p stack-6">
-      <h2 class="app-title" style="font-size:1.35rem; text-shadow:none; -webkit-text-fill-color:unset; color:var(--r1-neon); background:none">1. Connect Discogs</h2>
-      <p style="color:var(--r1-dim); font-size:.95rem">Gib <span style="color:var(--r1-neon); font-weight:700">Personal Access Token</span> und Benutzername ein, um Discogs zu verbinden.</p>
-      <input id="discogsToken" class="field" type="text" placeholder="Your Discogs Personal Access Token" />
-      <input id="discogsUsername" class="field" type="text" placeholder="Your Discogs Username" />
+    <div class="card p stack-6" id="auth-view">
+      <h2 class="app-title" style="font-size:1.1rem; text-shadow:none; -webkit-text-fill-color:unset; color:var(--r1-neon); background:none">1. Connect Discogs</h2>
+      <p style="color:var(--r1-dim); font-size:.9rem">Gib <span style="color:var(--r1-neon); font-weight:700">Personal Access Token</span> und Benutzername ein, um Discogs zu verbinden.</p>
+      <input class="field" id="discogsToken" placeholder="Your Discogs Personal Access Token" type="text"/>
+      <input class="field" id="discogsUsername" placeholder="Your Discogs Username" type="text"/>
       <button class="btn btn-primary btn-block" onclick="saveAndLoadCollection()">Authenticate &amp; Load Collection</button>
       <button class="btn btn-ghost btn-block" onclick="logoutAndReset()">Logout &amp; Clear Credentials</button>
     </div>
-
     <!-- Main Content (hidden bis Auth) -->
-    <div id="main-content" class="hidden">
+    <div class="hidden" id="main-content">
       <!-- Tabs -->
       <div class="tabs">
-        <button id="tabCollection" class="tab" onclick="showView('collection')">My Records</button>
-        <button id="tabScanner" class="tab" onclick="showView('scanner')">Live Scan</button>
-        <button id="tabManualSearch" class="tab" onclick="showView('manualSearch')">Manual Search</button>
+        <button class="tab" id="tabCollection" onclick="showView('collection')">My Records</button>
+        <button class="tab" id="tabScanner" onclick="showView('scanner')">Live Scan</button>
+        <button class="tab" id="tabManualSearch" onclick="showView('manualSearch')">Manual Search</button>
       </div>
-
       <!-- Collection View -->
-      <div id="collection-view" class="view stack-4 mt-4">
-        <h2 style="color:#d6d6db; font-weight:800; font-size:1.25rem">Latest 50 Records</h2>
+      <div class="view stack-4 mt-4" id="collection-view">
+        <h2 style="color:#d6d6db; font-weight:800; font-size:1rem">Latest 50 Records</h2>
         <button class="btn btn-ghost btn-block" onclick="loadCollection()">Refresh Collection</button>
-        <div id="collection-list" class="grid"></div>
-        <p id="loading-message" class="hidden" style="text-align:center; color:#8f90a0; padding:24px 0">Loading records...</p>
+        <div class="grid" id="collection-list"></div>
+        <p class="hidden" id="loading-message" style="text-align:center; color:#8f90a0; padding:12px 0">Loading records...</p>
       </div>
-
       <!-- Scanner View -->
-      <div id="scanner-view" class="view hidden card p stack-4" style="border:1px solid var(--r1-border)">
-        <h2 class="app-title" style="font-size:1.35rem; text-shadow:none; -webkit-text-fill-color:unset; color:var(--r1-neon); background:none">Live Barcode Scanner</h2>
+      <div class="view hidden card p stack-4" id="scanner-view" style="border:1px solid var(--r1-border)">
+        <h2 class="app-title" style="font-size:1.1rem; text-shadow:none; -webkit-text-fill-color:unset; color:var(--r1-neon); background:none">Live Barcode Scanner</h2>
         <div class="scan-frame">
           <video id="scanner-video" style="width:100%; height:100%; object-fit:cover"></video>
-          <canvas id="scanner-canvas" class="hidden"></canvas>
+          <canvas class="hidden" id="scanner-canvas"></canvas>
           <div class="neon"></div>
-          <p id="camera-status" class="scan-status">Status: Stopped</p>
+          <p class="scan-status" id="camera-status">Status: Stopped</p>
         </div>
-        <button id="scanner-toggle-btn" class="btn btn-primary btn-block" onclick="toggleScanner()">Start Camera &amp; Scan</button>
-        <div id="search-result-scanner" class="result">
-          <h3 style="font-weight:800; color:var(--r1-neon); font-size:1.1rem">Record Found!</h3>
-          <p id="result-title-scanner" style="color:#d3d4db; font-size:.95rem"></p>
+        <button class="btn btn-primary btn-block" id="scanner-toggle-btn" onclick="toggleScanner()">Start Camera &amp; Scan</button>
+        <div class="result" id="search-result-scanner">
+          <h3 style="font-weight:800; color:var(--r1-neon); font-size:1rem">Record Found!</h3>
+          <p id="result-title-scanner" style="color:#d3d4db; font-size:.9rem"></p>
           <button class="btn btn-primary btn-block" onclick="addRecordToCollection()">Add to Collection</button>
         </div>
       </div>
-
       <!-- Manual Search View -->
-      <div id="manualSearch-view" class="view hidden card p stack-4" style="border:1px solid var(--r1-border)">
-        <h2 class="app-title" style="font-size:1.35rem; text-shadow:none; -webkit-text-fill-color:unset; color:var(--r1-neon); background:none">Search by Name/Query</h2>
-        <p style="color:var(--r1-dim); font-size:.95rem">Search Discogs by Artist, Title, or Catalog #.</p>
-        <input id="manualQueryInput" class="field" type="text" placeholder="Artist, Title, or Catalog Number" />
+      <div class="view hidden card p stack-4" id="manualSearch-view" style="border:1px solid var(--r1-border)">
+        <h2 class="app-title" style="font-size:1.1rem; text-shadow:none; -webkit-text-fill-color:unset; color:var(--r1-neon); background:none">Search by Name/Query</h2>
+        <p style="color:var(--r1-dim); font-size:.9rem">Search Discogs by Artist, Title, or Catalog #.</p>
+        <input class="field" id="manualQueryInput" placeholder="Artist, Title, or Catalog Number" type="text"/>
         <button class="btn btn-primary btn-block" onclick="handleManualSearch()">Search Discogs</button>
-        <div id="search-result-manual" class="result">
-          <h3 style="font-weight:800; color:var(--r1-neon); font-size:1.1rem">Record Found!</h3>
-          <p id="result-title-manual" style="color:#d3d4db; font-size:.95rem"></p>
+        <div class="result" id="search-result-manual">
+          <h3 style="font-weight:800; color:var(--r1-neon); font-size:1rem">Record Found!</h3>
+          <p id="result-title-manual" style="color:#d3d4db; font-size:.9rem"></p>
           <button class="btn btn-primary btn-block" onclick="addRecordToCollection()">Add to Collection</button>
         </div>
       </div>
     </div>
-
     <!-- Message Box -->
-    <div id="message-box" class="card p" style="position:fixed; left:50%; bottom:18px; transform:translateX(-50%); width:min(92%, 480px); text-align:center; font-weight:700; z-index:50; transition:opacity .3s; opacity:0; pointer-events:none; background:#0f0f15; border:1px solid var(--r1-border)"></div>
+    <div class="card p" id="message-box" style="position:fixed; left:50%; bottom:8px; transform:translateX(-50%); width:220px; text-align:center; font-weight:700; z-index:50; transition:opacity .3s; opacity:0; pointer-events:none; background:#0f0f15; border:1px solid var(--r1-border)"></div>
   </div>
 
   <!-- App Logic: Original Script aus der Repo beibehalten -->
@@ -205,14 +212,6 @@
     const resultTitleScanner = document.getElementById('result-title-scanner');
     const resultBoxManual = document.getElementById('search-result-manual');
     const resultTitleManual = document.getElementById('result-title-manual');
-
     let discogsToken = localStorage.getItem('discogsToken') || '';
     let discogsUsername = localStorage.getItem('discogsUsername') || '';
-    let currentSearchResult = null;
-    let mediaStream = null;
-    let codeReader = null;
-
-    function showMessage(text, isError = false) {
-      messageBox.textContent = text;
-      messageBox.style.opacity = '1';
-      messageBox.style.pointerEvents = 'auto';
+    let
