@@ -1,233 +1,41 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=240,height=282,viewport-fit=cover,user-scalable=no,maximum-scale=1.0,initial-scale=1.0">
-  <title>Discogs R1</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body {
-      height: 100%;
-      background: #1a1a1a;
-      font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      display: grid;
-      place-items: center;
-      color: #e0e0e0;
-    }
-    .frame {
-      width: 240px;
-      height: 282px;
-      background: #0a0a0a;
-      border: 1px solid #333;
-      border-radius: 12px;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-    .logo {
-      padding: 20px 0 16px;
-      text-align: center;
-      font-size: 16px;
-      font-weight: 700;
-      color: #ff6a00;
-      letter-spacing: 0.5px;
-    }
-    .card {
-      flex: 1;
-      padding: 0 20px 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    label {
-      font-size: 11px;
-      color: #999;
-      font-weight: 500;
-    }
-    input {
-      width: 100%;
-      padding: 10px;
-      background: #151515;
-      border: 1px solid #333;
-      border-radius: 6px;
-      color: #e0e0e0;
-      font-size: 13px;
-      outline: none;
-    }
-    input:focus {
-      border-color: #ff6a00;
-    }
-    .btn {
-      width: 100%;
-      padding: 12px;
-      background: #ff6a00;
-      border: none;
-      border-radius: 6px;
-      color: #000;
-      font-size: 14px;
-      font-weight: 700;
-      cursor: pointer;
-      margin-top: 4px;
-    }
-    .btn:active {
-      transform: translateY(1px);
-    }
-    .status {
-      font-size: 11px;
-      text-align: center;
-      min-height: 16px;
-      color: #999;
-    }
-    .status.success { color: #4ade80; }
-    .status.error { color: #f87171; }
-    .logged-in {
-      display: none;
-      flex-direction: column;
-      gap: 12px;
-    }
-    .logged-in.active {
-      display: flex;
-    }
-    .welcome {
-      font-size: 13px;
-      text-align: center;
-      color: #4ade80;
-      font-weight: 600;
-    }
-    .actions {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-    .btn-secondary {
-      padding: 10px;
-      background: #1a1a1a;
-      border: 1px solid #333;
-      border-radius: 6px;
-      color: #e0e0e0;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    .btn-secondary:active {
-      transform: translateY(1px);
-    }
-  </style>
-</head>
-<body>
-  <div class="frame">
-    <div class="logo">DISCOGS R1</div>
-    <div class="card" id="loginView">
-      <div class="field">
-        <label for="token">Token</label>
-        <input type="text" id="token" placeholder="Personal Access Token">
-      </div>
-      <div class="field">
-        <label for="username">Username</label>
-        <input type="text" id="username" placeholder="Discogs Username">
-      </div>
-      <button class="btn" onclick="window.login()">Login</button>
-      <div class="status" id="status"></div>
-    </div>
-    <div class="card logged-in" id="loggedInView">
-      <div class="welcome" id="welcome">Login erfolgreich</div>
-      <div class="actions">
-        <button class="btn-secondary" onclick="window.showCollection()">Collection</button>
-        <button class="btn-secondary" onclick="window.showScan()">Scan</button>
-      </div>
-      <button class="btn-secondary" onclick="window.logout()">Logout</button>
-    </div>
-  </div>
-
-  <script>
-    const store = {
-      get token() { return localStorage.getItem('discogs_token') || ''; },
-      set token(v) { localStorage.setItem('discogs_token', v); },
-      get user() { return localStorage.getItem('discogs_user') || ''; },
-      set user(v) { localStorage.setItem('discogs_user', v); }
-    };
-
-    function setStatus(text, type = '') {
-      const el = document.getElementById('status');
-      el.textContent = text;
-      el.className = 'status ' + type;
-    }
-
-    function showView(viewId) {
-      document.getElementById('loginView').style.display = viewId === 'login' ? 'flex' : 'none';
-      document.getElementById('loggedInView').classList.toggle('active', viewId === 'loggedIn');
-    }
-
-    window.login = async function() {
-      const token = document.getElementById('token').value.trim();
-      const username = document.getElementById('username').value.trim();
-
-      if (!token || !username) {
-        setStatus('Bitte Token und Username eingeben', 'error');
-        return;
+        document.getElementById('scanResult').style.display = 'none';
       }
 
-      setStatus('Anmeldung läuft...');
-
-      try {
-        const response = await fetch(`https://api.discogs.com/users/${encodeURIComponent(username)}`, {
-          headers: {
-            'Authorization': `Discogs token=${token}`,
-            'User-Agent': 'DiscogsR1/1.0'
+      async function onBarcode(code) {
+        try {
+          // Search Discogs by barcode/UPC/EAN
+          const q = encodeURIComponent(code);
+          const data = await discogsFetch(`https://api.discogs.com/database/search?barcode=${q}`);
+          const r = (data && data.results && data.results[0]) ? data.results[0] : null;
+          if (r) {
+            document.getElementById('resImg').src = r.cover_image || '';
+            document.getElementById('resTitle').textContent = r.title || '';
+            const sub = [];
+            if (r.year) sub.push(r.year);
+            if (r.country) sub.push(r.country);
+            document.getElementById('resSub').textContent = sub.join(' • ');
+            document.getElementById('scanResult').style.display = 'grid';
+          } else {
+            alert('Keine Treffer für Barcode: ' + code);
           }
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
+        } catch (e) {
+          console.error(e);
+          alert('Suche fehlgeschlagen: ' + e.message);
         }
+      }
 
-        const data = await response.json();
-        
-        if (data && data.username) {
-          store.token = token;
-          store.user = username;
-          document.getElementById('welcome').textContent = `Login erfolgreich: ${data.username}`;
-          showView('loggedIn');
-          setStatus('');
+      // Auto-login if credentials exist
+      window.addEventListener('DOMContentLoaded', () => {
+        if (store.token && store.user) {
+          document.getElementById('token').value = store.token;
+          document.getElementById('username').value = store.user;
+          showLogin(false);
+          setActiveTab('collection');
+          loadCollection();
         } else {
-          throw new Error('Ungültige API-Antwort');
+          showLogin(true);
         }
-      } catch (error) {
-        setStatus(`Fehler: ${error.message}`, 'error');
-      }
-    };
-
-    window.logout = function() {
-      store.token = '';
-      store.user = '';
-      document.getElementById('token').value = '';
-      document.getElementById('username').value = '';
-      showView('login');
-      setStatus('Abgemeldet');
-    };
-
-    window.showCollection = function() {
-      alert('Collection-Feature: In Entwicklung');
-    };
-
-    window.showScan = function() {
-      alert('Scan-Feature: In Entwicklung');
-    };
-
-    // Auto-login if credentials exist
-    window.addEventListener('DOMContentLoaded', () => {
-      if (store.token && store.user) {
-        document.getElementById('token').value = store.token;
-        document.getElementById('username').value = store.user;
-        document.getElementById('welcome').textContent = `Willkommen zurück: ${store.user}`;
-        showView('loggedIn');
-      }
-    });
-  </script>
-</body>
+      });
+    </script>
+  </body>
 </html>
