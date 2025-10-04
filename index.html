@@ -1,181 +1,233 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=240,height=282,viewport-fit=cover,user-scalable=no,maximum-scale=1.0,initial-scale=1.0" />
-  <title>Discogs R1 Live Manager</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=240,height=282,viewport-fit=cover,user-scalable=no,maximum-scale=1.0,initial-scale=1.0">
+  <title>Discogs R1</title>
   <style>
-    :root { --bg:#0a0a0a; --bg-elev:#141414; --text:#e9e9e9; --muted:#9aa0a6; --accent:#ff6a00; --accent-2:#ff8c33; --card:#101214; --ok:#17c964; --warn:#f5a524; --err:#f31260; --radius:10px; --r1w:240px; --r1h:282px; }
-    *{box-sizing:border-box}
-    html,body{height:100%;background:var(--bg);color:var(--text);font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial,"Noto Sans","Apple Color Emoji","Segoe UI Emoji"}
-    body{margin:0;display:grid;place-items:center}
-    .frame{width:var(--r1w);height:var(--r1h);background:linear-gradient(180deg,#0c0c0c,#0a0a0a);border:1px solid #222;border-radius:18px;overflow:hidden;position:relative;box-shadow:0 0 0 1px #000 inset,0 10px 30px rgba(0,0,0,.6)}
-    .topbar{height:36px;display:grid;grid-template-columns:36px 1fr 36px;align-items:center;background:var(--bg-elev);border-bottom:1px solid #1f1f1f}
-    .tb-btn{width:28px;height:28px;margin:0 4px;border-radius:8px;display:grid;place-items:center;border:1px solid #262626;background:#121212;color:var(--text);cursor:pointer}
-    .tb-btn:active{transform:translateY(1px)}
-    .brand{text-align:center;font-weight:700;font-size:12px;letter-spacing:.4px;color:var(--accent-2);text-shadow:0 0 8px rgba(255,106,0,.35)}
-    .tabs{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:4px;padding:6px;background:#0f0f0f;border-bottom:1px solid #1a1a1a}
-    .tab{font-size:11px;padding:6px 8px;text-align:center;border-radius:8px;border:1px solid #222;color:var(--muted);cursor:pointer;user-select:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .tab.active{color:var(--text);border-color:var(--accent);box-shadow:0 0 0 1px rgba(255,106,0,.2) inset,0 0 12px rgba(255,106,0,.15)}
-    .content{height:calc(var(--r1h) - 36px - 36px);overflow:hidden;position:relative}
-    .view{position:absolute;inset:0;padding:10px;overflow:auto;display:none}
-    .view::-webkit-scrollbar{width:6px}
-    .view::-webkit-scrollbar-thumb{background:#2a2a2a;border-radius:4px}
-    .view.active{display:block}
-    .card{background:var(--card);border:1px solid #202124;border-radius:var(--radius);padding:10px}
-    .row{display:grid;grid-template-columns:1fr;gap:8px}
-    label{font-size:11px;color:var(--muted)}
-    input,select{width:100%;background:#0f1113;color:var(--text);border:1px solid #232323;border-radius:8px;padding:8px;font-size:12px;outline:none}
-    input:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(255,106,0,.2)}
-    .btn{display:inline-grid;place-items:center;padding:8px 10px;font-size:12px;border-radius:10px;border:1px solid #242424;background:#141414;color:var(--text);cursor:pointer;user-select:none}
-    .btn.primary{background:linear-gradient(180deg,#ff6a00,#d95500);border-color:#ff6a00;color:#0b0b0b;font-weight:700;text-shadow:0 1px 0 rgba(255,255,255,.25)}
-    .btn.ghost{background:#0f0f0f}
-    .btn:active{transform:translateY(1px)}
-    .btn.full{width:100%}
-    .muted{color:var(--muted);font-size:11px}
-    .grid{display:grid;gap:8px}
-    .grid.cols-2{grid-template-columns:repeat(2,1fr)}
-    .list{display:grid;gap:8px}
-    .item{display:grid;grid-template-columns:44px 1fr auto;gap:8px;align-items:center;padding:8px;border:1px solid #202124;border-radius:10px;background:#0f1011}
-    .thumb{width:44px;height:44px;background:#1b1b1b;border-radius:6px;object-fit:cover}
-    .title{font-size:12px;font-weight:600}
-    .subtitle{font-size:11px;color:var(--muted)}
-    .pill{border:1px solid #2a2a2a;border-radius:999px;padding:3px 8px;font-size:10px;color:var(--muted)}
-    .status{font-size:11px}
-    .status.ok{color:var(--ok)}
-    .status.err{color:var(--err)}
-    .status.warn{color:var(--warn)}
-    .spacer{height:6px}
-    .hint{font-size:10px;color:#bdbdbd}
-    .footer{position:absolute;left:0;right:0;bottom:0;height:36px;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:6px;background:#0e0e0e;border-top:1px solid #1a1a1a}
-    .footer .btn{font-size:11px;padding:6px 8px}
-    .content,.view,.card,input,.btn,.tabs{min-width:0}
-    .ellipsis{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    a{color:var(--accent-2);text-decoration:none}
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      height: 100%;
+      background: #1a1a1a;
+      font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      display: grid;
+      place-items: center;
+      color: #e0e0e0;
+    }
+    .frame {
+      width: 240px;
+      height: 282px;
+      background: #0a0a0a;
+      border: 1px solid #333;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .logo {
+      padding: 20px 0 16px;
+      text-align: center;
+      font-size: 16px;
+      font-weight: 700;
+      color: #ff6a00;
+      letter-spacing: 0.5px;
+    }
+    .card {
+      flex: 1;
+      padding: 0 20px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    label {
+      font-size: 11px;
+      color: #999;
+      font-weight: 500;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      background: #151515;
+      border: 1px solid #333;
+      border-radius: 6px;
+      color: #e0e0e0;
+      font-size: 13px;
+      outline: none;
+    }
+    input:focus {
+      border-color: #ff6a00;
+    }
+    .btn {
+      width: 100%;
+      padding: 12px;
+      background: #ff6a00;
+      border: none;
+      border-radius: 6px;
+      color: #000;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 4px;
+    }
+    .btn:active {
+      transform: translateY(1px);
+    }
+    .status {
+      font-size: 11px;
+      text-align: center;
+      min-height: 16px;
+      color: #999;
+    }
+    .status.success { color: #4ade80; }
+    .status.error { color: #f87171; }
+    .logged-in {
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .logged-in.active {
+      display: flex;
+    }
+    .welcome {
+      font-size: 13px;
+      text-align: center;
+      color: #4ade80;
+      font-weight: 600;
+    }
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .btn-secondary {
+      padding: 10px;
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 6px;
+      color: #e0e0e0;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-secondary:active {
+      transform: translateY(1px);
+    }
   </style>
 </head>
 <body>
-  <div class="frame" role="application" aria-label="Discogs R1">
-    <div class="topbar">
-      <button aria-label="Back" class="tb-btn" onclick="window.onBack()">⟨</button>
-      <div class="brand">Discogs R1</div>
-      <button aria-label="Settings" class="tb-btn" onclick="window.onSettings()">⚙</button>
+  <div class="frame">
+    <div class="logo">DISCOGS R1</div>
+    <div class="card" id="loginView">
+      <div class="field">
+        <label for="token">Token</label>
+        <input type="text" id="token" placeholder="Personal Access Token">
+      </div>
+      <div class="field">
+        <label for="username">Username</label>
+        <input type="text" id="username" placeholder="Discogs Username">
+      </div>
+      <button class="btn" onclick="window.login()">Login</button>
+      <div class="status" id="status"></div>
     </div>
-    <div class="tabs" role="tablist">
-      <div class="tab active" id="tab-auth" role="tab" aria-selected="true" onclick="window.switchTab('auth')">Auth</div>
-      <div class="tab" id="tab-collection" role="tab" aria-selected="false" onclick="window.switchTab('collection')">Collection</div>
-      <div class="tab" id="tab-scan" role="tab" aria-selected="false" onclick="window.switchTab('scan')">Scan</div>
-      <div class="tab" id="tab-search" role="tab" aria-selected="false" onclick="window.switchTab('search')">Search</div>
-    </div>
-    <div class="content">
-      <section id="view-auth" class="view active" role="tabpanel" aria-labelledby="tab-auth">
-        <div class="card grid" style="gap:10px">
-          <div class="row">
-            <label for="inp-token">Discogs Token</label>
-            <input id="inp-token" autocomplete="off" placeholder="Personal Access Token" />
-          </div>
-          <div class="row">
-            <label for="inp-user">Benutzername</label>
-            <input id="inp-user" autocomplete="off" placeholder="Discogs Username" />
-          </div>
-          <div class="grid cols-2">
-            <button class="btn" onclick="window.fillDemo()">Demo</button>
-            <button class="btn primary" onclick="window.onAuth()">Login</button>
-          </div>
-          <div class="muted">Hint: Create token in Discogs settings. Stored in localStorage.</div>
-        </div>
-        <div class="spacer"></div>
-        <div class="card grid">
-          <div id="auth-status" class="status">Not authenticated.</div>
-          <button class="btn ghost" onclick="window.onLogout()">Logout</button>
-        </div>
-      </section>
-      <section id="view-collection" class="view" role="tabpanel" aria-labelledby="tab-collection">
-        <div class="grid">
-          <div class="card grid">
-            <div class="grid cols-2">
-              <button class="btn" onclick="window.loadFolders()">Folders</button>
-              <button class="btn primary" onclick="window.loadCollection()">Load Collection</button>
-            </div>
-            <div class="row">
-              <label for="sel-folder">Folder</label>
-              <select id="sel-folder"></select>
-            </div>
-          </div>
-          <div class="card">
-            <div class="muted">Items</div>
-            <div id="list-collection" class="list" aria-live="polite"></div>
-          </div>
-        </div>
-      </section>
-      <section id="view-scan" class="view" role="tabpanel" aria-labelledby="tab-scan">
-        <div class="grid">
-          <div class="card grid">
-            <div class="grid cols-2">
-              <button class="btn primary" onclick="window.startScan()">Start</button>
-              <button class="btn" onclick="window.stopScan()">Stop</button>
-            </div>
-            <div class="muted">Barcode-Scanner nutzt ZXing. Kamera-Zugriff erforderlich.</div>
-          </div>
-          <div class="card">
-            <video id="video" playsinline style="width:100%;border-radius:10px;background:#000"></video>
-            <div class="spacer"></div>
-            <div id="scan-result" class="status"></div>
-          </div>
-        </div>
-        <script src="https://unpkg.com/@zxing/library@0.21.3"></script>
-      </section>
-      <section id="view-search" class="view" role="tabpanel" aria-labelledby="tab-search">
-        <div class="card grid">
-          <div class="row">
-            <label for="inp-q">Query</label>
-            <input id="inp-q" placeholder="Artist, Release, Barcode…" />
-          </div>
-          <div class="grid cols-2">
-            <button class="btn" onclick="window.searchManual()">Search</button>
-            <button class="btn ghost" onclick="window.clearSearch()">Clear</button>
-          </div>
-        </div>
-        <div class="spacer"></div>
-        <div class="card">
-          <div id="search-list" class="list" aria-live="polite"></div>
-        </div>
-      </section>
-    </div>
-    <div class="footer">
-      <button class="btn" onclick="window.switchTab('auth')">Auth</button>
-      <button class="btn" onclick="window.switchTab('collection')">Collection</button>
-      <button class="btn" onclick="window.switchTab('scan')">Scan</button>
+    <div class="card logged-in" id="loggedInView">
+      <div class="welcome" id="welcome">Login erfolgreich</div>
+      <div class="actions">
+        <button class="btn-secondary" onclick="window.showCollection()">Collection</button>
+        <button class="btn-secondary" onclick="window.showScan()">Scan</button>
+      </div>
+      <button class="btn-secondary" onclick="window.logout()">Logout</button>
     </div>
   </div>
 
   <script>
-  (function(){
-    const $ = sel => document.querySelector(sel);
-    const $$ = sel => Array.from(document.querySelectorAll(sel));
-    const apiBase = 'https://api.discogs.com';
-
     const store = {
-      get token(){ return localStorage.getItem('discogs_token') || ''; },
-      set token(v){ localStorage.setItem('discogs_token', v || ''); },
-      get user(){ return localStorage.getItem('discogs_user') || ''; },
-      set user(v){ localStorage.setItem('discogs_user', v || ''); }
+      get token() { return localStorage.getItem('discogs_token') || ''; },
+      set token(v) { localStorage.setItem('discogs_token', v); },
+      get user() { return localStorage.getItem('discogs_user') || ''; },
+      set user(v) { localStorage.setItem('discogs_user', v); }
     };
 
-    function setStatus(id, text, cls){ const el = document.getElementById(id); if(!el) return; el.className = 'status ' + (cls||''); el.textContent = text; }
+    function setStatus(text, type = '') {
+      const el = document.getElementById('status');
+      el.textContent = text;
+      el.className = 'status ' + type;
+    }
 
-    function applyAuthToInputs(){ const t=$('#inp-token'); const u=$('#inp-user'); if(t) t.value=store.token; if(u) u.value=store.user; setStatus('auth-status', store.token ? `Token set for ${store.user||'unknown'}` : 'Not authenticated.', store.token ? 'ok' : 'warn'); }
+    function showView(viewId) {
+      document.getElementById('loginView').style.display = viewId === 'login' ? 'flex' : 'none';
+      document.getElementById('loggedInView').classList.toggle('active', viewId === 'loggedIn');
+    }
 
-    function switchTab(name){ $$('.tab').forEach(t=>{ const a=t.id==='tab-'+name; t.classList.toggle('active',a); t.setAttribute('aria-selected',a?'true':'false'); }); $$('.view').forEach(v=>{ v.classList.toggle('active', v.id==='view-'+name); }); }
+    window.login = async function() {
+      const token = document.getElementById('token').value.trim();
+      const username = document.getElementById('username').value.trim();
 
-    async function dget(path, params={}){ const headers={'User-Agent':'R1-Discogs/1.0','Accept':'application/json'}; const token=store.token; if(token) headers['Authorization']=`Discogs token=${token}`; const url=new URL(apiBase+path); Object.entries(params).forEach(([k,v])=>{ if(v!==undefined && v!==null && v!=='') url.searchParams.set(k,v); }); const r=await fetch(url.toString(),{headers}); if(!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); }
+      if (!token || !username) {
+        setStatus('Bitte Token und Username eingeben', 'error');
+        return;
+      }
 
-    async function onAuth(){ const token=($('#inp-token')?.value||'').trim(); const user=($('#inp-user')?.value||'').trim(); if(!token||!user){ setStatus('auth-status','Bitte Token und Benutzername eingeben.','err'); return; } store.token=token; store.user=user; setStatus('auth-status','Gespeichert. Prüfe Profil…','warn'); try{ const me=await dget(`/users/${encodeURIComponent(user)}`); if(!me?.username) throw new Error('Ungültige Antwort vom Server.'); setStatus('auth-status',`Angemeldet als ${me.username}`,'ok'); switchTab('collection'); } catch(err){ setStatus('auth-status',`Fehler: ${err?.message||'Unbekannter Fehler'}`,'err'); } }
+      setStatus('Anmeldung läuft...');
 
-    function onLogout(){ store.token=''; store.user=''; applyAuthToInputs(); setStatus('auth-status','Abgemeldet.','warn'); switchTab('auth'); }
-    function onBack(){ if(history?.back) history.back(); }
-    function onSettings(){ alert('Keine Einstellungen verfügbar.'); }
+      try {
+        const response = await fetch(`https://api.discogs.com/users/${encodeURIComponent(username)}`, {
+          headers: {
+            'Authorization': `Discogs token=${token}`,
+            'User-Agent': 'DiscogsR1/1.0'
+          }
+        });
 
-    async function loadFolders(){ setStatus('auth-status','Lade Ordner…','warn'); try{ const user=store.user; if(!user) throw new Error('Kein Benutzer gesetzt.'); const data=await dget(`/users/${encodeURIComponent(user)}/collection/folders`); const sel=document.getElementById('sel-folder'); if(sel){ sel.innerHTML=''; (data?.folders||[]).forEach(f=>{ const o=document.createElement('option'); o.value=f?.id; o.textContent=`${f?.name||'Folder'} (${f?.count||0})`; sel.appendChild(o); }); } setStatus('auth-status','Ordner geladen.','ok'); }catch(e){ setStatus('auth-status',`Fehler Ordner: ${e?.message||e}`,'err'); } }
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
 
-    async function loadCollection(){ const list=document.getElementById('list-collection'); if(list) list.innerHTML=''; try{ const user=store.user; if(!user) throw new Error('Kein Benutzer gesetzt.'); const folderId=document.getElementById('sel-folder')?.value || 0; const data=await dget(`/users/${encodeURIComponent(user)}/collection/folders/${folderId}/releases`,{ per_page:25, page:1 }); const items=(data?.releases||[]).map(r=>({ id:r?.id, title:r?.basic_information?.title, artist:(r?.basic_information?.artists||[]).map(a=>a?.name).join(', '), year:r?.basic_information?.year, thumb:r?.basic_information?.thumb })); if(list){ items.forEach(it=>{ const el=document.createElement('div'); el.className='item'; el.innerHTML=`<img class="thumb" src="${it.thumb||''
+        const data = await response.json();
+        
+        if (data && data.username) {
+          store.token = token;
+          store.user = username;
+          document.getElementById('welcome').textContent = `Login erfolgreich: ${data.username}`;
+          showView('loggedIn');
+          setStatus('');
+        } else {
+          throw new Error('Ungültige API-Antwort');
+        }
+      } catch (error) {
+        setStatus(`Fehler: ${error.message}`, 'error');
+      }
+    };
+
+    window.logout = function() {
+      store.token = '';
+      store.user = '';
+      document.getElementById('token').value = '';
+      document.getElementById('username').value = '';
+      showView('login');
+      setStatus('Abgemeldet');
+    };
+
+    window.showCollection = function() {
+      alert('Collection-Feature: In Entwicklung');
+    };
+
+    window.showScan = function() {
+      alert('Scan-Feature: In Entwicklung');
+    };
+
+    // Auto-login if credentials exist
+    window.addEventListener('DOMContentLoaded', () => {
+      if (store.token && store.user) {
+        document.getElementById('token').value = store.token;
+        document.getElementById('username').value = store.user;
+        document.getElementById('welcome').textContent = `Willkommen zurück: ${store.user}`;
+        showView('loggedIn');
+      }
+    });
+  </script>
+</body>
+</html>
