@@ -1,542 +1,218 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Discogs R1 Live Manager</title>
-    <!-- PRODUCTION READY: Link to the built and optimized CSS file -->
-    <link href="./styles.css" rel="stylesheet">
-    <!-- Load ZXing-JS for Barcode Scanning -->
-    <script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.20.0/umd/index.min.js"></script>
-    <style>
-        /* Minimal custom styles needed for specific elements */
-        #app-container {
-            max-width: 400px;
-            margin: 0 auto;
-            min-height: 100vh;
-            padding: 1rem;
-        }
-        /* Custom input and button focus state, using the defined R1 Neon color */
-        input:focus, button:focus {
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.5); 
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Discogs R1 Live Manager</title>
+
+  <!-- Reines natives CSS – Tailwind CDN entfernt. Designsystem im Dokumentkopf. -->
+  <style>
+    /* R1 Design Tokens */
+    :root{
+      --r1-bg:#0b0b0f;              /* Dark background */
+      --r1-surface:#12131a;         /* Base surface */
+      --r1-card:#191a22;            /* Card background */
+      --r1-elev:#202230;            /* Elevated surface */
+      --r1-neon:#ff6600;            /* Primary neon */
+      --r1-neon-2:#ff8a3d;          /* Accent neon */
+      --r1-text:#e9e9ee;            /* Main text */
+      --r1-dim:#a2a2b0;             /* Dimmed text */
+      --r1-border:#2b2c39;          /* Border */
+      --r1-danger:#e5484d;
+      --radius-xl:20px;
+      --radius-lg:14px;
+      --radius-md:10px;
+      --shadow-1:0 8px 28px rgba(0,0,0,.35);
+      --shadow-2:0 14px 38px rgba(0,0,0,.45);
+    }
+
+    /* Global Reset & Base */
+    *,*::before,*::after{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+      -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+      background: radial-gradient(1200px 800px at 70% -10%, rgba(255,102,0,.08), transparent 60%), var(--r1-bg);
+      color:var(--r1-text);
+      line-height:1.6;
+      letter-spacing:.2px;
+    }
+    img{display:block; max-width:100%}
+    a{color:var(--r1-neon); text-decoration:none}
+
+    /* Layout helpers (ersetzt Tailwind spacing/containers) */
+    .container{max-width: 920px; margin-inline:auto; padding: 28px 18px 80px}
+    .stack-4 > * + *{margin-top: 1rem}
+    .stack-6 > * + *{margin-top: 1.5rem}
+    .stack-8 > * + *{margin-top: 2rem}
+
+    /* Header */
+    .app-header{ text-align:center; padding: 10px 0 18px }
+    .app-title{
+      margin:0; font-size: clamp(28px, 4.6vw, 42px); font-weight:900; letter-spacing:.3px;
+      background: linear-gradient(90deg, var(--r1-neon), var(--r1-neon-2));
+      -webkit-background-clip:text; background-clip:text; color:transparent;
+      text-shadow: 0 0 22px rgba(255,102,0,.25);
+    }
+    .app-sub{ margin:.35rem 0 0; color:var(--r1-dim); font-size: .92rem }
+
+    /* Cards / Surfaces */
+    .card{ background: linear-gradient(180deg, var(--r1-card), var(--r1-elev)); border:1px solid var(--r1-border); border-radius:var(--radius-xl); box-shadow:var(--shadow-1) }
+    .card.p{ padding: 20px }
+
+    /* Inputs */
+    .field{ width:100%; background:#0f1016; color:var(--r1-text); border:2px solid var(--r1-border); border-radius:var(--radius-lg); padding:14px 14px; outline:none; transition: .2s border-color, .2s box-shadow, .2s transform }
+    .field::placeholder{ color:#7b7b86 }
+    .field:focus{ border-color:var(--r1-neon); box-shadow:0 0 0 3px rgba(255,102,0,.25); transform: translateY(-1px) }
+
+    /* Buttons */
+    .btn{ display:inline-flex; align-items:center; justify-content:center; gap:.5rem; border-radius:var(--r1-neon); font-weight:700; cursor:pointer; user-select:none; transition:.2s transform, .2s box-shadow, .2s filter }
+    .btn-block{ width:100% }
+    .btn-primary{ background: linear-gradient(180deg, var(--r1-neon), #e25700); color:#fff; border:none; border-radius:var(--radius-lg); padding:14px 16px; box-shadow:0 10px 24px rgba(255,102,0,.25) }
+    .btn-primary:hover{ transform: translateY(-2px); filter:saturate(1.06) }
+    .btn-primary:active{ transform: translateY(0) }
+    .btn-ghost{ background:#1b1c27; color:#fff; border:1px solid var(--r1-border); border-radius:var(--radius-lg); padding:12px 14px }
+    .btn-ghost:hover{ background:#222336; border-color:#3b3b4a }
+    .btn-danger{ background: linear-gradient(180deg, var(--r1-danger), #c73c41); color:#fff; border:none; border-radius:var(--radius-lg); padding:12px 14px }
+
+    /* Tabs */
+    .tabs{ display:flex; gap:8px; background:#171722; padding:8px; border-radius:20px; border:1px solid var(--r1-border) }
+    .tab{ flex:1; padding:10px 12px; border-radius:12px; color:#cfcfd6; background:transparent; border:0; cursor:pointer }
+    .tab.active{ background:var(--r1-neon); color:#fff }
+    .tab:not(.active):hover{ background:#212235 }
+
+    /* Collection list */
+    .grid{ display:grid; gap:12px }
+    .record{ display:flex; gap:12px; align-items:center; padding:12px; border:1px solid var(--r1-border); background: linear-gradient(180deg, #171822, #14141c); border-radius:14px; transition:.18s background,.18s transform,.18s border-color; cursor:pointer }
+    .record:hover{ background:#1c1d28; border-color:#3a3a49; transform: translateY(-1px) }
+    .record img{ width:52px; height:52px; border-radius:10px; object-fit:cover; border:1px solid #2d2d39 }
+    .record .meta{ min-width:0; flex:1 }
+    .title{ font-weight:800; color:#f0f0f3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+    .sub{ color:#9b9ba6; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+    .tag{ color:var(--r1-neon); font-size:12px; font-weight:700 }
+
+    /* Scanner */
+    .scan-frame{ position:relative; aspect-ratio:16/9; background:black; border-radius:14px; overflow:hidden; display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow-1) }
+    .scan-frame .neon{ position:absolute; inset:0; border:3px dashed var(--r1-neon); opacity:.85; margin:12px; border-radius:14px; pointer-events:none }
+    .scan-status{ position:absolute; top:8px; left:8px; font-size:12px; background:rgba(0,0,0,.55); padding:4px 6px; border-radius:8px }
+
+    /* Result boxes */
+    .result{ margin-top:14px; padding:14px; background:#101018; border:1px solid var(--r1-neon); border-radius:14px; display:none }
+    .result.show{ display:block }
+
+    /* Utility visibility */
+    .hidden{ display:none !important }
+
+    /* Message box */
+    #message-box{ backdrop-filter: blur(8px) }
+
+    /* R1 helpers mapping frühere Tailwind-Klassen */
+    .text-center{text-align:center}
+    .mt-4{margin-top:1rem}
+    .pt-2{padding-top:.5rem}
+    .pb-4{padding-bottom:1rem}
+  </style>
+
+  <!-- ZXing für Barcode Scan (beibehalten) -->
+  <script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.20.0/umd/index.min.js"></script>
 </head>
 <body>
+  <div id="app-container" class="container stack-6">
+    <!-- Header -->
+    <header class="app-header">
+      <h1 class="app-title">DISCOGS R1 LIVE</h1>
+      <p class="app-sub">Manage &amp; Scan Your Vinyls</p>
+    </header>
 
-    <div id="app-container" class="space-y-6">
-
-        <!-- Header -->
-        <header class="text-center pt-2 pb-4">
-            <h1 class="text-3xl font-extrabold text-r1-neon">
-                DISCOGS R1 LIVE
-            </h1>
-            <p class="text-sm text-gray-400 mt-1">Manage & Scan Your Vinyls</p>
-        </header>
-
-        <!-- 1. Authentication View -->
-        <div id="auth-view" class="bg-r1-card p-5 rounded-2xl shadow-lg space-y-4 border border-zinc-700">
-            <h2 class="text-xl font-bold text-r1-neon">1. Connect Discogs</h2>
-            
-            <p class="text-sm text-gray-400">
-                Enter your <span class="font-bold text-orange-400">Personal Access Token</span> (generated on Discogs settings) and Username to enable full functionality.
-            </p>
-
-            <input type="text" id="discogsToken" placeholder="Your Discogs Personal Access Token" class="w-full p-3 border-2 border-zinc-700 bg-r1-dark text-white rounded-xl focus:ring-r1-neon focus:border-r1-neon">
-            <input type="text" id="discogsUsername" placeholder="Your Discogs Username" class="w-full p-3 border-2 border-zinc-700 bg-r1-dark text-white rounded-xl focus:ring-r1-neon focus:border-r1-neon">
-            
-            <button onclick="saveAndLoadCollection()" class="w-full btn-primary p-3 rounded-xl font-semibold transition duration-200 shadow-md">
-                Authenticate & Load Collection
-            </button>
-
-            <button onclick="logoutAndReset()" class="w-full bg-red-800 text-white p-2 rounded-xl text-sm font-medium hover:bg-red-700 transition duration-150 border border-red-500/50">
-                Logout & Clear Credentials
-            </button>
-        </div>
-
-        <!-- Main Content (Hidden until authenticated) -->
-        <div id="main-content" class="hidden">
-            
-            <!-- Navigation Tabs -->
-            <div class="flex space-x-2 bg-zinc-800 p-1 rounded-2xl shadow-inner border border-zinc-700">
-                <button id="tabCollection" onclick="showView('collection')" class="flex-1 p-2 rounded-xl font-medium transition duration-200 text-sm">
-                    My Records
-                </button>
-                <button id="tabScanner" onclick="showView('scanner')" class="flex-1 p-2 rounded-xl font-medium transition duration-200 text-sm">
-                    Live Scan
-                </button>
-                <button id="tabManualSearch" onclick="showView('manualSearch')" class="flex-1 p-2 rounded-xl font-medium transition duration-200 text-sm">
-                    Manual Search
-                </button>
-            </div>
-
-            <!-- 2. Collection View -->
-            <div id="collection-view" class="view space-y-3 mt-4">
-                <h2 class="text-xl font-bold text-gray-300">Latest 50 Records</h2>
-                <button onclick="loadCollection()" class="w-full bg-zinc-700 text-r1-neon p-2 rounded-xl text-sm font-medium hover:bg-zinc-600 transition duration-150 border border-r1-neon/50">
-                    Refresh Collection
-                </button>
-                <div id="collection-list" class="space-y-3 pt-3">
-                    <p id="loading-message" class="text-center text-gray-500 hidden py-6">Loading records...</p>
-                    <!-- Record items will be inserted here -->
-                </div>
-            </div>
-
-            <!-- 3. Scanner View -->
-            <div id="scanner-view" class="view hidden space-y-4 mt-4 bg-r1-card p-5 rounded-2xl shadow-lg border border-zinc-700">
-                <h2 class="text-xl font-bold text-r1-neon">Live Barcode Scanner</h2>
-
-                <!-- Video Preview Area -->
-                <div class="relative w-full aspect-video rounded-xl overflow-hidden bg-black flex items-center justify-center shadow-inner">
-                    <!-- Video and Canvas for ZXing processing -->
-                    <video id="scanner-video" class="w-full h-full object-cover"></video>
-                    <canvas id="scanner-canvas" class="hidden"></canvas> 
-                    <!-- Neon Orange Scanning Indicator -->
-                    <div class="absolute inset-0 border-4 border-dashed border-r1-neon opacity-80 m-4 pointer-events-none rounded-xl"></div>
-                    <p id="camera-status" class="absolute top-2 left-2 text-white text-xs bg-black bg-opacity-70 p-1 rounded font-mono">Status: Stopped</p>
-                </div>
-
-                <button onclick="toggleScanner()" id="scanner-toggle-btn" class="w-full bg-red-600 text-white p-3 rounded-xl font-semibold hover:bg-red-500 transition duration-200 shadow-md">
-                    Start Camera & Scan
-                </button>
-                
-                <div id="search-result-scanner" class="mt-4 p-4 bg-r1-dark rounded-xl border border-r1-neon hidden space-y-3">
-                    <h3 class="font-bold text-lg text-r1-neon">Record Found!</h3>
-                    <p id="result-title-scanner" class="text-gray-300 text-sm"></p>
-                    <button onclick="addRecordToCollection()" class="w-full btn-primary p-3 rounded-xl font-semibold transition duration-200 shadow-md">
-                        Add to Collection
-                    </button>
-                </div>
-            </div>
-
-            <!-- 4. Manual Search View (New Feature) -->
-            <div id="manualSearch-view" class="view hidden space-y-4 mt-4 bg-r1-card p-5 rounded-2xl shadow-lg border border-zinc-700">
-                <h2 class="text-xl font-bold text-r1-neon">Search by Name/Query</h2>
-                <p class="text-sm text-gray-400">Search Discogs by Artist, Title, or Catalog #.</p>
-                
-                <input type="text" id="manualQueryInput" placeholder="Artist, Title, or Catalog Number" class="w-full p-3 border-2 border-zinc-700 bg-r1-dark text-white rounded-xl focus:ring-r1-neon focus:border-r1-neon">
-                
-                <button onclick="handleManualSearch()" class="w-full btn-primary p-3 rounded-xl font-semibold transition duration-200 shadow-md">
-                    Search Discogs
-                </button>
-                
-                <div id="search-result-manual" class="mt-4 p-4 bg-r1-dark rounded-xl border border-r1-neon hidden space-y-3">
-                    <h3 class="font-bold text-lg text-r1-neon">Record Found!</h3>
-                    <p id="result-title-manual" class="text-gray-300 text-sm"></p>
-                    <button onclick="addRecordToCollection()" class="w-full btn-primary p-3 rounded-xl font-semibold transition duration-200 shadow-md">
-                        Add to Collection
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Global Message Box (R1 style notification) -->
-        <div id="message-box" class="fixed bottom-4 left-1/2 transform -translate-x-1/2 w-11/12 max-w-sm p-4 rounded-xl shadow-2xl text-center font-semibold z-50 transition-opacity duration-300 opacity-0 pointer-events-none bg-zinc-900 text-gray-200 border border-zinc-700" style="backdrop-filter: blur(8px);"></div>
-
+    <!-- 1) Auth View -->
+    <div id="auth-view" class="card p stack-6">
+      <h2 class="app-title" style="font-size:1.35rem; text-shadow:none; -webkit-text-fill-color:unset; color:var(--r1-neon); background:none">1. Connect Discogs</h2>
+      <p style="color:var(--r1-dim); font-size:.95rem">Gib <span style="color:var(--r1-neon); font-weight:700">Personal Access Token</span> und Benutzername ein, um Discogs zu verbinden.</p>
+      <input id="discogsToken" class="field" type="text" placeholder="Your Discogs Personal Access Token" />
+      <input id="discogsUsername" class="field" type="text" placeholder="Your Discogs Username" />
+      <button class="btn btn-primary btn-block" onclick="saveAndLoadCollection()">Authenticate &amp; Load Collection</button>
+      <button class="btn btn-ghost btn-block" onclick="logoutAndReset()">Logout &amp; Clear Credentials</button>
     </div>
 
-    <script type="module">
-        // --- Global Constants and State ---
-        const API_BASE = "https://api.discogs.com";
-        const messageBox = document.getElementById('message-box');
-        const tokenInput = document.getElementById('discogsToken');
-        const usernameInput = document.getElementById('discogsUsername');
-        const collectionList = document.getElementById('collection-list');
-        const loadingMessage = document.getElementById('loading-message');
-        const scannerVideo = document.getElementById('scanner-video');
-        const cameraStatus = document.getElementById('camera-status');
-        const authView = document.getElementById('auth-view');
-        const mainContent = document.getElementById('main-content');
-        const scannerToggleBtn = document.getElementById('scanner-toggle-btn');
-        const manualQueryInput = document.getElementById('manualQueryInput');
+    <!-- Main Content (hidden bis Auth) -->
+    <div id="main-content" class="hidden">
+      <!-- Tabs -->
+      <div class="tabs">
+        <button id="tabCollection" class="tab" onclick="showView('collection')">My Records</button>
+        <button id="tabScanner" class="tab" onclick="showView('scanner')">Live Scan</button>
+        <button id="tabManualSearch" class="tab" onclick="showView('manualSearch')">Manual Search</button>
+      </div>
 
-        // Result boxes for different views
-        const resultBoxScanner = document.getElementById('search-result-scanner');
-        const resultTitleScanner = document.getElementById('result-title-scanner');
-        const resultBoxManual = document.getElementById('search-result-manual');
-        const resultTitleManual = document.getElementById('result-title-manual');
-        
-        // State Variables (Load from localStorage for persistence)
-        let discogsToken = localStorage.getItem('discogsToken') || '';
-        let discogsUsername = localStorage.getItem('discogsUsername') || '';
-        let currentSearchResult = null; // Holds the last successful release object
-        let mediaStream = null;
-        let codeReader = null; // ZXing Code Reader instance
+      <!-- Collection View -->
+      <div id="collection-view" class="view stack-4 mt-4">
+        <h2 style="color:#d6d6db; font-weight:800; font-size:1.25rem">Latest 50 Records</h2>
+        <button class="btn btn-ghost btn-block" onclick="loadCollection()">Refresh Collection</button>
+        <div id="collection-list" class="grid"></div>
+        <p id="loading-message" class="hidden" style="text-align:center; color:#8f90a0; padding:24px 0">Loading records...</p>
+      </div>
 
-        // --- Utility Functions ---
+      <!-- Scanner View -->
+      <div id="scanner-view" class="view hidden card p stack-4" style="border:1px solid var(--r1-border)">
+        <h2 class="app-title" style="font-size:1.35rem; text-shadow:none; -webkit-text-fill-color:unset; color:var(--r1-neon); background:none">Live Barcode Scanner</h2>
+        <div class="scan-frame">
+          <video id="scanner-video" style="width:100%; height:100%; object-fit:cover"></video>
+          <canvas id="scanner-canvas" class="hidden"></canvas>
+          <div class="neon"></div>
+          <p id="camera-status" class="scan-status">Status: Stopped</p>
+        </div>
+        <button id="scanner-toggle-btn" class="btn btn-primary btn-block" onclick="toggleScanner()">Start Camera &amp; Scan</button>
+        <div id="search-result-scanner" class="result">
+          <h3 style="font-weight:800; color:var(--r1-neon); font-size:1.1rem">Record Found!</h3>
+          <p id="result-title-scanner" style="color:#d3d4db; font-size:.95rem"></p>
+          <button class="btn btn-primary btn-block" onclick="addRecordToCollection()">Add to Collection</button>
+        </div>
+      </div>
 
-        /** Displays a temporary, stylish notification */
-        function showMessage(text, isError = false) {
-            messageBox.textContent = text;
-            messageBox.className = 'fixed bottom-4 left-1/2 transform -translate-x-1/2 w-11/12 max-w-sm p-4 rounded-xl shadow-2xl text-center font-semibold z-50 transition-opacity duration-300 opacity-100 pointer-events-auto bg-zinc-900 border';
-            
-            if (isError) {
-                messageBox.classList.add('text-red-400', 'border-red-600');
-            } else {
-                messageBox.classList.add('text-green-400', 'border-green-600');
-            }
-            messageBox.classList.remove('text-gray-200', 'border-zinc-700');
+      <!-- Manual Search View -->
+      <div id="manualSearch-view" class="view hidden card p stack-4" style="border:1px solid var(--r1-border)">
+        <h2 class="app-title" style="font-size:1.35rem; text-shadow:none; -webkit-text-fill-color:unset; color:var(--r1-neon); background:none">Search by Name/Query</h2>
+        <p style="color:var(--r1-dim); font-size:.95rem">Search Discogs by Artist, Title, or Catalog #.</p>
+        <input id="manualQueryInput" class="field" type="text" placeholder="Artist, Title, or Catalog Number" />
+        <button class="btn btn-primary btn-block" onclick="handleManualSearch()">Search Discogs</button>
+        <div id="search-result-manual" class="result">
+          <h3 style="font-weight:800; color:var(--r1-neon); font-size:1.1rem">Record Found!</h3>
+          <p id="result-title-manual" style="color:#d3d4db; font-size:.95rem"></p>
+          <button class="btn btn-primary btn-block" onclick="addRecordToCollection()">Add to Collection</button>
+        </div>
+      </div>
+    </div>
 
-            setTimeout(() => {
-                messageBox.classList.remove('opacity-100');
-                messageBox.classList.add('opacity-0');
-            }, 3000);
-        }
+    <!-- Message Box -->
+    <div id="message-box" class="card p" style="position:fixed; left:50%; bottom:18px; transform:translateX(-50%); width:min(92%, 480px); text-align:center; font-weight:700; z-index:50; transition:opacity .3s; opacity:0; pointer-events:none; background:#0f0f15; border:1px solid var(--r1-border)"></div>
+  </div>
 
-        /** Changes the active view and updates tab styles */
-        window.showView = function(viewName) {
-            document.querySelectorAll('.view').forEach(view => view.classList.add('hidden'));
-            document.getElementById(`${viewName}-view`).classList.remove('hidden');
-            
-            document.querySelectorAll('button[id^="tab"]').forEach(btn => {
-                btn.classList.remove('bg-r1-neon', 'text-white');
-                btn.classList.add('text-gray-300', 'hover:bg-zinc-700');
-            });
-            
-            const activeTab = document.getElementById(`tab${viewName.charAt(0).toUpperCase() + viewName.slice(1)}`);
-            activeTab.classList.add('bg-r1-neon', 'text-white');
-            activeTab.classList.remove('text-gray-300', 'hover:bg-zinc-700');
+  <!-- App Logic: Original Script aus der Repo beibehalten -->
+  <script type="module">
+    const API_BASE = "https://api.discogs.com";
+    const messageBox = document.getElementById('message-box');
+    const tokenInput = document.getElementById('discogsToken');
+    const usernameInput = document.getElementById('discogsUsername');
+    const collectionList = document.getElementById('collection-list');
+    const loadingMessage = document.getElementById('loading-message');
+    const scannerVideo = document.getElementById('scanner-video');
+    const cameraStatus = document.getElementById('camera-status');
+    const authView = document.getElementById('auth-view');
+    const mainContent = document.getElementById('main-content');
+    const scannerToggleBtn = document.getElementById('scanner-toggle-btn');
+    const manualQueryInput = document.getElementById('manualQueryInput');
+    const resultBoxScanner = document.getElementById('search-result-scanner');
+    const resultTitleScanner = document.getElementById('result-title-scanner');
+    const resultBoxManual = document.getElementById('search-result-manual');
+    const resultTitleManual = document.getElementById('result-title-manual');
 
-            // Ensure scanner stops when moving away from the scanner view
-            if (viewName !== 'scanner') {
-                stopScanner();
-            }
-        }
+    let discogsToken = localStorage.getItem('discogsToken') || '';
+    let discogsUsername = localStorage.getItem('discogsUsername') || '';
+    let currentSearchResult = null;
+    let mediaStream = null;
+    let codeReader = null;
 
-        // --- Authentication & Initialization ---
-
-        /** Saves credentials and attempts to load the collection */
-        window.saveAndLoadCollection = function() {
-            const newToken = tokenInput.value.trim();
-            const newUsername = usernameInput.value.trim();
-
-            if (!newToken || !newUsername) {
-                showMessage("Token and Username are required.", true);
-                return;
-            }
-
-            // Save new credentials
-            discogsToken = newToken;
-            discogsUsername = newUsername;
-            localStorage.setItem('discogsToken', discogsToken);
-            localStorage.setItem('discogsUsername', discogsUsername);
-            
-            loadCollection();
-        }
-
-        /** Clears stored credentials and resets the UI to the authentication view. */
-        window.logoutAndReset = function() {
-            localStorage.removeItem('discogsToken');
-            localStorage.removeItem('discogsUsername');
-            discogsToken = '';
-            discogsUsername = '';
-            
-            // Hide main content, show auth view, clear inputs
-            mainContent.classList.add('hidden');
-            authView.classList.remove('hidden');
-            tokenInput.value = '';
-            usernameInput.value = '';
-            collectionList.innerHTML = '';
-            
-            // Stop scanner if running
-            stopScanner();
-            
-            showMessage("Successfully logged out and credentials cleared.", false);
-        }
-
-
-        /** Base fetch function with headers and error handling (More Robust) */
-        async function discogsFetch(url) {
-            const userAgent = `RabbitR1_DiscogsLiveApp/1.0 (User: ${discogsUsername})`;
-            const headers = {
-                'Authorization': `Discogs token=${discogsToken}`,
-                'User-Agent': userAgent,
-            };
-
-            try {
-                const response = await fetch(url, { headers });
-                
-                if (response.status === 401 || response.status === 403) {
-                     localStorage.removeItem('discogsToken');
-                     localStorage.removeItem('discogsUsername');
-                     authView.classList.remove('hidden');
-                     mainContent.classList.add('hidden');
-                     throw new Error("Authentication failed. Token or Username might be invalid.");
-                }
-                if (response.status === 429) {
-                     throw new Error("Rate limit exceeded. Please wait a minute and try again.");
-                }
-                if (!response.ok) {
-                    const errorData = await response.json().catch(() => ({ message: 'Unknown API error' }));
-                    throw new Error(`API Error: ${response.status} - ${errorData.message || 'Unknown error'}`);
-                }
-                return await response.json();
-            } catch (error) {
-                console.error("Fetch Error:", error);
-                showMessage(`API Request Failed: ${error.message}`, true);
-                return null;
-            }
-        }
-
-        /** Loads the user's record collection */
-        window.loadCollection = async function() {
-            if (!discogsToken || !discogsUsername) {
-                 authView.classList.remove('hidden');
-                 mainContent.classList.add('hidden');
-                 showMessage("Please provide Discogs credentials first.", true);
-                 return;
-            }
-
-            authView.classList.add('hidden');
-            mainContent.classList.remove('hidden');
-            loadingMessage.classList.remove('hidden');
-            collectionList.innerHTML = '';
-            
-            const url = `${API_BASE}/users/${discogsUsername}/collection/folders/0/releases?per_page=50&sort=added&sort_order=desc`;
-            const data = await discogsFetch(url);
-            
-            loadingMessage.classList.add('hidden');
-
-            if (data && data.releases) {
-                if (data.releases.length === 0) {
-                    collectionList.innerHTML = '<p class="text-center text-gray-500 py-6">Your collection is empty or private.</p>';
-                    return;
-                }
-                data.releases.forEach(release => {
-                    renderRecordItem(release);
-                });
-                showMessage(`Successfully loaded ${data.pagination.items} records.`, false);
-            }
-        }
-
-        /** Renders a single record item in the list */
-        function renderRecordItem(release) {
-            const item = document.createElement('div');
-            item.className = 'flex items-center space-x-3 bg-r1-card p-3 rounded-xl shadow-sm border border-zinc-700 hover:bg-zinc-700 transition duration-150 active:scale-[0.98] cursor-pointer';
-            
-            const thumb = release.basic_information.thumb || 'https://placehold.co/60x60/FF6600/ffffff?text=LP';
-            const artist = release.basic_information.artists.map(a => a.name).join(', ');
-            const title = release.basic_information.title;
-            const format = release.basic_information.formats.map(f => f.name).join('/');
-
-            item.innerHTML = `
-                <img src="${thumb}" onerror="this.onerror=null;this.src='https://placehold.co/60x60/FF6600/18181b?text=LP';" class="w-12 h-12 rounded-lg flex-shrink-0 object-cover border border-zinc-700" alt="Cover: ${title}">
-                <div class="min-w-0 flex-1 overflow-hidden">
-                    <p class="text-base font-bold text-gray-100 truncate">${title}</p>
-                    <p class="text-sm text-gray-400 truncate">${artist}</p>
-                    <p class="text-xs text-r1-neon font-medium">${format} (${release.basic_information.year || 'N/A'})</p>
-                </div>
-                <!-- Simple View Detail Arrow -->
-                <svg class="w-5 h-5 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-            `;
-            collectionList.appendChild(item);
-        }
-
-        // --- Search Logic (Barcode & Manual) ---
-
-        /** Centralized function to display and set the found record */
-        function displaySearchResult(release, resultTitleElement, resultBoxElement, type) {
-            currentSearchResult = release;
-
-            const parts = release.title.split(' - ');
-            const artist = parts[0];
-            const title = parts.slice(1).join(' - ') || release.title;
-
-            resultTitleElement.innerHTML = `<span class="font-extrabold text-r1-neon">${artist}</span> - ${title} (${release.year || 'N/A'})`;
-            resultBoxElement.classList.remove('hidden');
-
-            showMessage(`Record found via ${type}.`, false);
-        }
-
-        /** Unified Search function handling Barcode, Fallback, and Manual Query */
-        async function executeSearch(query, isBarcodeAttempt = false, currentResultTitle, currentResultBox) {
-            currentSearchResult = null;
-            currentResultBox.classList.remove('hidden');
-            currentResultTitle.innerHTML = '<span class="animate-pulse">Searching Discogs...</span>';
-
-            let url;
-            let searchType = isBarcodeAttempt ? 'barcode' : 'q';
-            
-            // Build the initial search URL
-            url = `${API_BASE}/database/search?${searchType}=${encodeURIComponent(query)}&type=release&per_page=1`;
-
-            const data = await discogsFetch(url);
-            
-            if (data && data.results && data.results.length > 0) {
-                // Success: Barcode or general query found a match
-                displaySearchResult(data.results[0], currentResultTitle, currentResultBox, isBarcodeAttempt ? 'Barcode' : 'Manual Query');
-                return true;
-
-            } else if (isBarcodeAttempt) {
-                // Fallback: Barcode search failed, try general search with the same code (often a Cat#)
-                showMessage("Barcode search failed. Attempting general query fallback...", false);
-                return executeSearch(query, false, currentResultTitle, currentResultBox); // Recursive call for fallback
-
-            } else {
-                // Final Failure
-                currentResultTitle.textContent = 'No record found with this query. Please refine your search.';
-                showMessage("No match found.", true);
-                currentResultBox.classList.add('hidden'); // Hide the box on final failure
-                return false;
-            }
-        }
-
-        // --- Manual Search Handler ---
-
-        window.handleManualSearch = function() {
-            const query = manualQueryInput.value.trim();
-            if (!query) {
-                showMessage("Please enter a search query.", true);
-                return;
-            }
-            executeSearch(query, false, resultTitleManual, resultBoxManual);
-        }
-
-        // --- Add to Collection Logic (Shared by both views) ---
-
-        /** Adds the found record to the user's collection folder (Real API Call) */
-        window.addRecordToCollection = async function() {
-            if (!currentSearchResult || !currentSearchResult.id) {
-                showMessage("No record selected to add.", true);
-                return;
-            }
-
-            const releaseId = currentSearchResult.id;
-            const folderId = 1; // Discogs default 'Uncategorized' folder is 1.
-
-            const url = `${API_BASE}/users/${discogsUsername}/collection/folders/${folderId}/releases/${releaseId}`;
-            
-            const userAgent = `RabbitR1_DiscogsLiveApp/1.0 (User: ${discogsUsername})`;
-            const headers = {
-                'Authorization': `Discogs token=${discogsToken}`,
-                'User-Agent': userAgent,
-                'Content-Type': 'application/x-www-form-urlencoded' 
-            };
-
-            try {
-                const response = await fetch(url, { method: 'POST', headers });
-                
-                if (response.ok || response.status === 409) { // 409 Conflict = already in collection
-                    const parts = currentSearchResult.title.split(' - ');
-                    const title = parts.slice(1).join(' - ') || currentSearchResult.title;
-
-                    showMessage(`${title} added successfully!`, false);
-                    resultBoxScanner.classList.add('hidden');
-                    resultBoxManual.classList.add('hidden');
-                    currentSearchResult = null;
-                    
-                    // Switch to collection view and refresh
-                    showView('collection'); 
-                    loadCollection();
-                } else {
-                    const errorText = await response.text();
-                    throw new Error(`Failed to add record. Status: ${response.status}.`);
-                }
-            } catch (error) {
-                console.error("Add Record Error:", error);
-                showMessage(`Error adding record: ${error.message}`, true);
-            }
-        }
-
-        // --- Camera & ZXing Scanning Logic ---
-
-        /** Toggles the scanner ON/OFF */
-        window.toggleScanner = function() {
-            if (mediaStream) {
-                stopScanner();
-            } else {
-                startScanner();
-            }
-        }
-
-        /** Starts the camera stream and initializes the barcode reader */
-        async function startScanner() {
-            if (mediaStream) return;
-            if (!discogsToken || !discogsUsername) {
-                 showMessage("Authenticate first before scanning.", true);
-                 return;
-            }
-
-            try {
-                cameraStatus.textContent = 'Status: Initializing...';
-                
-                // Request environment camera (back camera)
-                mediaStream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { facingMode: "environment" } 
-                });
-                
-                scannerVideo.srcObject = mediaStream;
-                scannerVideo.onloadedmetadata = () => {
-                    scannerVideo.play();
-                    
-                    codeReader = new ZXing.BrowserMultiFormatReader();
-                    
-                    codeReader.decodeFromVideo(scannerVideo, 'scanner-video', (result, err) => {
-                        if (result) {
-                            // Barcode successfully detected!
-                            stopScanner(); 
-                            
-                            showMessage(`Barcode detected: ${result.getText()}`, false);
-                            
-                            // Execute search with barcode and fallback enabled
-                            executeSearch(result.getText(), true, resultTitleScanner, resultBoxScanner);
-
-                        } else if (err && !(err instanceof ZXing.NotFoundException)) {
-                            console.error('Scanning error:', err);
-                        }
-                    });
-
-                    cameraStatus.textContent = 'Status: Scanning LIVE...';
-                    scannerToggleBtn.textContent = 'Stop Camera';
-                    scannerToggleBtn.classList.remove('bg-red-600', 'hover:bg-red-500');
-                    scannerToggleBtn.classList.add('bg-zinc-600', 'hover:bg-zinc-500');
-
-                };
-            } catch (err) {
-                console.error("Camera access failed:", err);
-                cameraStatus.textContent = 'Status: Access Denied.';
-                showMessage("Camera access denied. Please allow permissions.", true);
-            }
-        }
-
-        /** Stops the camera stream and barcode reader */
-        function stopScanner() {
-            if (codeReader) {
-                codeReader.reset();
-                codeReader = null;
-            }
-            if (mediaStream) {
-                mediaStream.getTracks().forEach(track => track.stop());
-                mediaStream = null;
-                scannerVideo.srcObject = null;
-            }
-            
-            cameraStatus.textContent = 'Status: Stopped';
-            scannerToggleBtn.textContent = 'Start Camera & Scan';
-            scannerToggleBtn.classList.add('bg-red-600', 'hover:bg-red-500');
-            scannerToggleBtn.classList.remove('bg-zinc-600', 'hover:bg-zinc-500');
-        }
-        
-        // --- Initialization ---
-        window.onload = function() {
-            // Check for existing saved credentials
-            if (discogsToken && discogsUsername) {
-                // Pre-fill inputs for reference
-                tokenInput.value = discogsToken;
-                usernameInput.value = discogsUsername;
-
-                authView.classList.add('hidden');
-                mainContent.classList.remove('hidden');
-                loadCollection();
-            } else {
-                // Show the authentication setup
-                authView.classList.remove('hidden');
-            }
-            // Ensure collection view is visible on start
-            showView('collection'); 
-        };
-
-    </script>
-</body>
-</html>
+    function showMessage(text, isError = false) {
+      messageBox.textContent = text;
+      messageBox.style.opacity = '1';
+      messageBox.style.pointerEvents = 'auto';
