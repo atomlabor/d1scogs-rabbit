@@ -1,5 +1,5 @@
 // Discogs R1 - main.js
-// UI fully in English, no scrolling required, collection item detail, persistent back button. R1 grid/paging view. Functions unchanged.
+// UI fully in English, R1 grid/paging view. Adds full Rabbit R1 scrollwheel support.
 (function(){
   // Simple store using localStorage
   const store = {
@@ -12,6 +12,7 @@
     },
     set collection(v) { localStorage.setItem('discogs_collection', JSON.stringify(v)) }
   };
+
   // Helpers
   function setStatus(text, type = ''){
     const el = document.getElementById('status');
@@ -27,6 +28,7 @@
     const cv = document.getElementById('collectionView');
     if (cv) cv.classList.remove('active');
   }
+
   // Build Discogs API URL with CORS fallback
   const UA = 'DiscogsR1/1.0 +https://github.com/atomlabor/d1scogs-rabbit';
   const corsProxies = [
@@ -49,6 +51,7 @@
     }
     throw lastErr || new Error('Fetch failed');
   }
+
   // Login and load profile
   async function login(){
     const tokenEl = document.getElementById('token');
@@ -74,6 +77,7 @@
       setStatus(`Error: ${error.message}`, 'error');
     }
   }
+
   // Load collection from Discogs (folder 0 = All)
   async function loadCollection(){
     if (!store.user || !store.token) return;
@@ -105,6 +109,7 @@
       setStatus('Could not load collection: ' + e.message, 'error');
     }
   }
+
   // Paging state for no-scroll R1 grid
   const PAGE_SIZE = 5; // at most five cards, never scroll
   let currentPage = 1;
@@ -119,6 +124,7 @@
       !term || (x.title||'').toLowerCase().includes(term) || (x.artist||'').toLowerCase().includes(term) || (String(x.year||'')).includes(term)
     );
   }
+
   // Render compact grid with paging and info button
   function renderCollection(){
     const list = document.getElementById('collectionList');
@@ -155,6 +161,7 @@
     if (v) v.classList.toggle('active', !!show);
     renderCollection();
   }
+
   // Detail overlay with Back button (no scroll)
   async function showDetail(id){
     try{
@@ -189,6 +196,7 @@
     const numericId = decodeURIComponent(String(id)).replace(/^inst-/, '');
     window.open(`https://www.discogs.com/release/${numericId}`, '_blank');
   }
+
   // Modal overlay helpers
   function openModal({title, content}){
     const overlay = document.getElementById('detailOverlay');
@@ -202,6 +210,7 @@
   function closeModal(){
     document.getElementById('detailOverlay')?.classList.remove('active');
   }
+
   // Scan overlay and barcode search
   function openScan(){
     if(!store.token){ setStatus('Please sign in first', 'error'); return; }
@@ -273,10 +282,29 @@
       setStatus('Add failed: ' + e.message, 'error');
     }
   }
+
   // Escaper
   function escapeHtml(s){
     return String(s).replace(/[&<>"']/g, c => ({'&':'&','<':'<','>':'>','"':'"','\'':''}[c]));
   }
+
+  // Rabbit R1 scrollwheel support
+  function onWheel(ev){
+    try{
+      if (!ev) return;
+      // Prevent page scroll to route wheel to R1 actions
+      ev.preventDefault();
+      const delta = ev.deltaY || ev.wheelDelta || 0;
+      if (typeof delta !== 'number' || delta === 0) return;
+      // Map wheel to paging: down -> next page, up -> prev page
+      if (delta > 0) setPage(currentPage + 1); else setPage(currentPage - 1);
+      // If Rabbit SDK present, notify it
+      if (window.rabbit && typeof window.rabbit.onScroll === 'function') {
+        window.rabbit.onScroll({ deltaY: delta, direction: delta > 0 ? 'down' : 'up' });
+      }
+    }catch(e){ /* no-op */ }
+  }
+
   // Expose API
   window.login = login;
   window.logout = function(){
@@ -289,22 +317,4 @@
   window.clearSearch = clearSearch;
   window.renderCollection = renderCollection;
   window.openScan = openScan;
-  window.closeScan = closeScan;
-  window.searchBarcode = searchBarcode;
-  window.addRelease = addRelease;
-  window.showDetail = showDetail;
-  window.openRelease = openRelease;
-  window.setPage = setPage;
-  window.closeModal = closeModal;
-  // Auto-login if credentials exist
-  window.addEventListener('DOMContentLoaded', async () => {
-    if (store.token && store.user) {
-      const t = document.getElementById('token'); if (t) t.value = store.token;
-      const u = document.getElementById('username'); if (u) u.value = store.user;
-      const w = document.getElementById('welcome'); if (w) w.textContent = `Welcome back: ${store.user}`;
-      showView('loggedIn');
-      await loadCollection();
-      toggleCollection(true);
-    }
-    // Apply dark background for body
-    if (document && document
+  window.closeScan = close
