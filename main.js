@@ -139,9 +139,9 @@
         `).join('')}
       </div>
       <div class="pager">
-        <button class="btn-secondary" onclick="window.setPage(${currentPage-1})" ${currentPage<=1?'disabled':''}>Prev</button>
+        <button class="btn-secondary" onclick="window.setPage(${currentPage-1})">Prev</button>
         <div class="page-indicator">${currentPage}/${totalPages}</div>
-        <button class="btn-secondary" onclick="window.setPage(${currentPage+1})" ${currentPage>=totalPages?'disabled':''}>Next</button>
+        <button class="btn-secondary" onclick="window.setPage(${currentPage+1})">Next</button>
       </div>
     `;
   }
@@ -171,11 +171,11 @@
           <div class="detail">
             <div class="detail-cover" style="background-image:url('${escapeHtml(cover)}')"></div>
             <div class="detail-lines">
-              <div><b>Artist:</b> ${escapeHtml(artist)}</div>
-              <div><b>Year:</b> ${escapeHtml(String(year))}</div>
-              <div><b>Label:</b> ${escapeHtml(label)}</div>
-              <div><b>Genre/Style:</b> ${escapeHtml([genres, styles].filter(Boolean).join(' / '))}</div>
-              <div class="tracks"><b>Tracklist:</b> ${escapeHtml(tracks)}</div>
+              Artist: ${escapeHtml(artist)}
+              Year: ${escapeHtml(String(year))}
+              Label: ${escapeHtml(label)}
+              Genre/Style: ${escapeHtml([genres, styles].filter(Boolean).join(' / '))}
+              <div class="tracks">Tracklist: ${escapeHtml(tracks)}</div>
             </div>
           </div>
         `
@@ -272,7 +272,7 @@
   }
   // Escaper
   function escapeHtml(s){
-    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&','<':'<','>':'>','"':'"','\'':''}[c]));
   }
   // Expose API
   window.login = login;
@@ -300,4 +300,8 @@
       const u = document.getElementById('username'); if (u) u.value = store.user;
       const w = document.getElementById('welcome'); if (w) w.textContent = `Welcome back: ${store.user}`;
       showView('loggedIn');
-      await load
+      await loadCollection();
+      toggleCollection(true);
+    }
+  });
+})();
