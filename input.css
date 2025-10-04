@@ -1,0 +1,22 @@
+/*
+ * This file is the input file for the Tailwind CSS build process.
+ * It imports the core Tailwind directives.
+ */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Apply the custom background color defined in tailwind.config.js */
+body {
+    background-color: theme('colors.r1-dark');
+    color: theme('colors.gray.200');
+}
+
+/* Ensure the primary accent uses the R1 Neon color */
+.btn-primary {
+    background-color: theme('colors.r1-neon');
+    color: white;
+}
+.btn-primary:hover {
+    background-color: #ff8533; /* Slightly lighter orange for hover effect */
+}
