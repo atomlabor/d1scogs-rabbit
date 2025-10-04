@@ -1,0 +1,21 @@
+{
+  "name": "discogs-r1-build",
+  "version": "1.0.0",
+  "description": "Tailwind CSS build setup for Discogs R1 Live App.",
+  "main": "index.js",
+  "scripts": {
+    "start": "npm run watch",
+    "build": "npx tailwindcss -i ./src/input.css -o ./dist/styles.css --minify",
+    "watch": "npx tailwindcss -i ./src/input.css -o ./dist/styles.css --watch"
+  },
+  "keywords": [
+    "tailwind",
+    "build",
+    "discogs"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "tailwindcss": "^3.4.1"
+  }
+}
