@@ -60,16 +60,16 @@
     const userEl = document.getElementById('username');
     const token = tokenEl ? tokenEl.value.trim() : '';
     const username = userEl ? userEl.value.trim() : '';
-    if (!token || !username) { setStatus('please enter token and username', 'error'); return; }
-    setStatus('signing in...');
+    if (!token || !username) { setStatus('Please enter token and username', 'error'); return; }
+    setStatus('Signing in...');
     try {
       const profileRes = await discogsFetch(`https://api.discogs.com/users/${encodeURIComponent(username)}`, {
         headers: { 'Authorization': `Discogs token=${token}` }
       });
       const data = await profileRes.json();
-      if (!data || !data.username) throw new Error('invalid API response');
+      if (!data || !data.username) throw new Error('Invalid API response');
       store.token = token; store.user = username;
-      const w = document.getElementById('welcome'); if (w) w.textContent = `signed in: ${data.username}`;
+      const w = document.getElementById('welcome'); if (w) w.textContent = `Signed in: ${data.username}`;
       showView('loggedIn');
       setStatus('');
       // Load real collection after login
@@ -93,8 +93,8 @@
         const items = (json && json.releases) ? json.releases : [];
         all = all.concat(items.map(r => ({
           id: r.id || (r.instance_id ? `inst-${r.instance_id}` : (r.basic_information?.id || '')),
-          title: r.basic_information?.title || 'unknown',
-          artist: (r.basic_information?.artists?.[0]?.name) || 'unknown',
+          title: r.basic_information?.title || 'Unknown',
+          artist: (r.basic_information?.artists?.[0]?.name) || 'Unknown',
           year: r.basic_information?.year || '',
           thumb: r.basic_information?.thumb || '',
           label: (r.basic_information?.labels?.[0]?.name) || '',
@@ -106,9 +106,9 @@
       store.collection = all;
       currentPage = 1; // reset paging on load
       renderCollection();
-      setStatus(`collection loaded: ${all.length} items`, 'success');
+      setStatus(`Collection loaded: ${all.length} items`, 'success');
     } catch(e){
-      setStatus('could not load collection: ' + e.message, 'error');
+      setStatus('Could not load collection: ' + e.message, 'error');
     }
   }
   
@@ -140,35 +140,30 @@
       <div class="grid">
         ${pageItems.map(x => `
           <div class="item">
-            <img src="${x.thumb}" alt="${escapeHtml(x.title)}" class="thumb" loading="lazy">
+            <img alt="${escapeHtml(x.title)}" class="thumb" loading="lazy"/>
             <div class="info">
               <div class="title">${escapeHtml(x.title)}</div>
               <div class="meta">${escapeHtml(x.artist)} • ${escapeHtml(String(x.year||''))}</div>
-            </div>
-<div class="actions">
-  <button onclick="window.showDetail('${x.id}')" class="btn-info" title="details">
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="display:inline-block;vertical-align:middle" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2"/>
-      <rect x="9" y="8" width="2" height="6" rx="1" fill="currentColor"/>
-      <rect x="9" y="5" width="2" height="2" rx="1" fill="currentColor"/>
+            </div><div class="actions">  <button class="btn-info" onclick="window.showDetail('${x.id}')" title="details">
+    <svg fill="none" height="20" style="display:inline-block;vertical-align:middle" viewbox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2"></circle>
+      <rect fill="currentColor" height="6" rx="1" width="2" x="9" y="8"></rect>
+      <rect fill="currentColor" height="2" rx="1" width="2" x="9" y="5"></rect>
     </svg>
   </button>
-  <button onclick="window.openRelease('${x.id}')" class="btn-ext" title="open">
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="display:inline-block;vertical-align:middle" xmlns="http://www.w3.org/2000/svg">
-      <rect x="4" y="8" width="8" height="8" rx="2" stroke="currentColor" stroke-width="2" fill="none"/>
-      <path d="M10 10 L16 4" stroke="currentColor" stroke-width="2"/>
-      <polyline points="13 4, 16 4, 16 7" stroke="currentColor" stroke-width="2" fill="none"/>
+  <button class="btn-ext" onclick="window.openRelease('${x.id}')" title="open">
+    <svg fill="none" height="20" style="display:inline-block;vertical-align:middle" viewbox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg">
+      <rect fill="none" height="8" rx="2" stroke="currentColor" stroke-width="2" width="8" x="4" y="8"></rect>
+      <path d="M10 10 L16 4" stroke="currentColor" stroke-width="2"></path>
+      <polyline fill="none" points="13 4, 16 4, 16 7" stroke="currentColor" stroke-width="2"></polyline>
     </svg>
-  </button>
-</div>
-
-          </div>
+  </button></div>          </div>
         `).join('')}
       </div>
       <div class="paging">
-        <button onclick="window.setPage(${currentPage - 1})" ${currentPage <= 1 ? 'disabled' : ''}>‹</button>
+        <button :="" onclick="window.setPage(${currentPage - 1})">‹</button>
         <span class="page-info">${currentPage}/${totalPages}</span>
-        <button onclick="window.setPage(${currentPage + 1})" ${currentPage >= totalPages ? 'disabled' : ''}>›</button>
+        <button onclick="window.setPage(${currentPage + 1})">= totalPages ? 'disabled' : ''}&gt;›</button>
       </div>
     `;
   }
@@ -199,13 +194,13 @@
         title: r.title || 'unknown',
         content: `
           <div class="detail-content">
-            <img src="${cover}" alt="${escapeHtml(r.title || 'unknown')}" class="detail-cover">
+            <img alt="${escapeHtml(r.title || 'unknown')}" class="detail-cover"/>
             <div class="detail-info">
-              <div><strong>artist:</strong> ${escapeHtml(artist)}</div>
-              <div><strong>year:</strong> ${escapeHtml(String(year))}</div>
-              <div><strong>label:</strong> ${escapeHtml(label)}</div>
-              <div><strong>genre/Style:</strong> ${escapeHtml([genres, styles].filter(Boolean).join(' / '))}</div>
-              <div><strong>tracklist:</strong> ${escapeHtml(tracks)}</div>
+              Artist: ${escapeHtml(artist)}
+              Year: ${escapeHtml(String(year))}
+              Label: ${escapeHtml(label)}
+              Genre/Style: ${escapeHtml([genres, styles].filter(Boolean).join(' / '))}
+              Tracklist: ${escapeHtml(tracks)}
             </div>
           </div>
         `
@@ -268,135 +263,27 @@
     if (!results.length){ wrap.hidden = true; wrap.innerHTML = ''; return; }
     wrap.hidden = false;
     wrap.innerHTML = results.slice(0,10).map(r => {
-      const title = r.title || 'unknown';
+      const title = r.title || 'Unknown';
       const year = r.year || '';
       const format = (r.format && r.format.join(', ')) || '';
       const id = r.id;
       const thumb = r.thumb || '';
       return `
         <div class="hit-item">
-          <img src="${thumb}" alt="${escapeHtml(title)}" class="hit-thumb" loading="lazy">
+          <img alt="${escapeHtml(title)}" class="hit-thumb" loading="lazy"/>
           <div class="hit-info">
             <div class="hit-title">${escapeHtml(title)}</div>
             <div class="hit-meta">${escapeHtml([year, format].filter(Boolean).join(' • '))}</div>
-          </div>
-<div class="hit-actions">
-  <button onclick="window.addRelease(${id})" class="btn-add" title="add to collection">+</button>
-  <button onclick="window.showDetail(${id})" class="btn-info" title="details">
-    <svg width="10" height="10" viewBox="0 0 20 20" fill="none" style="display:inline-block;vertical-align:middle" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2"/>
-      <rect x="9" y="8" width="2" height="6" rx="1" fill="currentColor"/>
-      <rect x="9" y="5" width="2" height="2" rx="1" fill="currentColor"/>
+          </div><div class="hit-actions">  <button class="btn-add" onclick="window.addRelease(${id})" title="add to collection">+</button>
+  <button class="btn-info" onclick="window.showDetail(${id})" title="details">
+    <svg fill="none" height="20" style="display:inline-block;vertical-align:middle" viewbox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2"></circle>
+      <rect fill="currentColor" height="6" rx="1" width="2" x="9" y="8"></rect>
+      <rect fill="currentColor" height="2" rx="1" width="2" x="9" y="5"></rect>
     </svg>
   </button>
-  <button onclick="window.openRelease(${id})" class="btn-ext" title="open">
-    <svg width="10" height="10" viewBox="0 0 20 20" fill="none" style="display:inline-block;vertical-align:middle" xmlns="http://www.w3.org/2000/svg">
-      <rect x="4" y="8" width="8" height="8" rx="2" stroke="currentColor" stroke-width="2" fill="none"/>
-      <path d="M10 10 L16 4" stroke="currentColor" stroke-width="2"/>
-      <polyline points="13 4, 16 4, 16 7" stroke="currentColor" stroke-width="2" fill="none"/>
-    </svg>
-  </button>
-</div>
-
-        </div>
-      `;
-    }).join('');
-  }
-  
-  async function addRelease(releaseId){
-    try {
-      // Fetch release detail to display meaningful info locally
-      const res = await discogsFetch(`https://api.discogs.com/releases/${releaseId}`);
-      const r = await res.json();
-      const entry = {
-        id: r.id,
-        title: r.title || 'unknown',
-        artist: (r.artists && r.artists[0]?.name) || 'unknown',
-        year: r.year || '',
-        thumb: (r.thumb || (r.images && r.images[0]?.uri) || ''),
-        label: (r.labels && r.labels[0]?.name) || '',
-        genres: (r.genres||[]).join(', ')
-      };
-      const col = store.collection; col.unshift(entry); store.collection = col;
-      setStatus('Item added', 'success');
-      currentPage = 1; renderCollection();
-    } catch(e){
-      setStatus('Add failed: ' + e.message, 'error');
-    }
-  }
-  
-  // Escaper
-  function escapeHtml(s){
-    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c]));
-  }
-  
- // Expose API
-window.login = login;
-window.logout = function(){
-  store.token = ''; store.user = '';
-  const t = document.getElementById('token'); if (t) t.value = '';
-  const u = document.getElementById('username'); if (u) u.value = '';
-  showView('login'); setStatus('Signed out');
-};
-window.toggleCollection = toggleCollection;
-window.clearSearch = clearSearch;
-window.renderCollection = renderCollection;
-window.openScan = openScan;
-window.closeScan = closeScan;
-window.searchBarcode = searchBarcode;
-window.addRelease = addRelease;
-window.showDetail = showDetail;
-window.openRelease = openRelease;
-window.setPage = setPage;
-window.closeModal = closeModal;
-
-// EINZIGER globaler Initialisierer
-window.addEventListener('DOMContentLoaded', async () => {
-  if (store.token && store.user) {
-    const t = document.getElementById('token'); if (t) t.value = store.token;
-    const u = document.getElementById('username'); if (u) u.value = store.user;
-    const w = document.getElementById('welcome'); if (w) w.textContent = `welcome back: ${store.user}`;
-    showView('loggedIn');
-    await loadCollection();
-    toggleCollection(true);
-  }
-
-  // Apply dark background for body
-  if (document && document.body) {
-    document.body.style.background = '#000000';
-  }
-
-  // --- UNIVERSAL R1 SCROLLWHEEL + KEY SUPPORT ---
-  (function(){
-    document.addEventListener('wheel', (e) => {
-      e.preventDefault();
-      if (e.deltaY < 0) window.dispatchEvent(new CustomEvent('scrollUp'));
-      if (e.deltaY > 0) window.dispatchEvent(new CustomEvent('scrollDown'));
-    });
-    document.addEventListener('keydown', (e) => {
-      if (e.code === 'ArrowUp') { e.preventDefault(); window.dispatchEvent(new CustomEvent('scrollUp')); }
-      if (e.code === 'ArrowDown') { e.preventDefault(); window.dispatchEvent(new CustomEvent('scrollDown')); }
-    });
-    if (window.rabbit && typeof window.rabbit.onScroll === 'function') {
-      window.rabbit.onScroll((delta) => {
-        if (delta < 0) window.dispatchEvent(new CustomEvent('scrollUp'));
-        if (delta > 0) window.dispatchEvent(new CustomEvent('scrollDown'));
-      });
-    }
-  })();
-
-  // Paging by custom events (debounced)
-  let scrollLock = false;
-  function unlockScroll() { scrollLock = false; }
-  window.addEventListener('scrollUp', () => {
-    if (scrollLock) return; scrollLock = true;
-    setPage(currentPage - 1);
-    setTimeout(unlockScroll, 150);
-  });
-  window.addEventListener('scrollDown', () => {
-    if (scrollLock) return; scrollLock = true;
-    setPage(currentPage + 1);
-    setTimeout(unlockScroll, 150);
-  });
-});
-
+  <button class="btn-ext" onclick="window.openRelease(${id})" title="open">
+    <svg fill="none" height="20" style="display:inline-block;vertical-align:middle" viewbox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg">
+      <rect fill="none" height="8" rx="2" stroke="currentColor" stroke-width="2" width="8" x="4" y="8"></rect>
+      <path d="M10 10 L16 4" stroke="currentColor" stroke-width="2"></path>
+      <polyline fill="none" points="13 4, 16 4, 16 7"
