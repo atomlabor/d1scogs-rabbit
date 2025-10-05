@@ -176,10 +176,6 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        .actions {
-            display: flex;
-            gap: 2px;
-        }
         .btn-info, .btn-ext, .btn-add {
             background: #444;
             color: #fff;
@@ -306,11 +302,11 @@
     <div class="card" id="loginView">
         <div class="field">
             <label for="token">token</label>
-            <input id="token" placeholder="personal access token" type="text">
+            <input type="text" id="token" placeholder="personal access token">
         </div>
         <div class="field">
             <label for="username">username</label>
-            <input id="username" placeholder="discogs username" type="text">
+            <input type="text" id="username" placeholder="discogs username">
         </div>
         <button onclick="window.login()">sign in</button>
         <div class="status" id="status"></div>
@@ -326,33 +322,33 @@
         
         <div id="collectionView">
             <div class="search">
-                <input id="searchInput" oninput="window.renderCollection()" placeholder="Search collection" type="text">
+                <input type="text" id="searchInput" placeholder="Search collection" oninput="window.renderCollection()">
                 <button onclick="window.clearSearch()">×</button>
             </div>
             <div id="collectionList"></div>
         </div>
     </div>
     
-    <div class="overlay" id="detailOverlay" aria-label="Details" aria-modal="true" role="dialog">
+    <div class="overlay" id="detailOverlay" role="dialog" aria-modal="true" aria-label="Details">
         <div class="detail-card">
             <div class="modal-header">
-                <div id="detailTitle" class="title"></div>
+                <div class="title" id="detailTitle"></div>
                 <button onclick="window.closeModal()">×</button>
             </div>
             <div id="detailBody"></div>
         </div>
     </div>
     
-    <div class="overlay" id="scanOverlay" aria-label="Scan" aria-modal="true" role="dialog">
+    <div class="overlay" id="scanOverlay" role="dialog" aria-modal="true" aria-label="Scan">
         <div class="scan-card">
             <div class="scan-area" id="scanArea">
-                <input id="codeInput" inputmode="numeric" placeholder="barcode e.g. 4029759123456" style="width:100%;background:#151515;border:1px solid #333;border-radius:6px;color:#e0e0e0;padding:8px;" type="text">
+                <input type="text" id="codeInput" inputmode="numeric" placeholder="barcode e.g. 4029759123456" style="width:100%;background:#151515;border:1px solid #333;border-radius:6px;color:#e0e0e0;padding:8px;">
             </div>
             <div class="scan-actions">
                 <button onclick="window.searchBarcode()">search</button>
                 <button onclick="window.closeScan()">back</button>
             </div>
-            <div class="hits" hidden id="scanHits"></div>
+            <div class="hits" id="scanHits" hidden></div>
         </div>
     </div>
     
