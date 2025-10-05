@@ -64,7 +64,7 @@
     setStatus('signing in...');
     try {
       const profileRes = await discogsFetch(`https://api.discogs.com/users/${encodeURIComponent(username)}`, {
-        headers: { 'Authorization': `discogs token=${token}` }
+        headers: { 'Authorization': `Discogs token=${token}` }
       });
       const data = await profileRes.json();
       if (!data || !data.username) throw new Error('invalid API response');
@@ -88,7 +88,7 @@
       let page = 1; const perPage = 100; let all = [];
       while (true){
         const url = `https://api.discogs.com/users/${encodeURIComponent(store.user)}/collection/folders/0/releases?token=${encodeURIComponent(store.token)}&page=${page}&per_page=${perPage}`;
-        const res = await discogsFetch(url, { headers: { 'Authorization': `discogs token=${store.token}` }});
+        const res = await discogsFetch(url, { headers: { 'Authorization': `Discogs token=${store.token}` }});
         const json = await res.json();
         const items = (json && json.releases) ? json.releases : [];
         all = all.concat(items.map(r => ({
@@ -252,7 +252,7 @@
     setStatus('searching barcode...');
     try{
       const url = `https://api.discogs.com/database/search?barcode=${encodeURIComponent(code)}&token=${encodeURIComponent(store.token)}`;
-      const res = await discogsFetch(url, { headers: { 'Authorization': `discogs token=${store.token}` }});
+      const res = await discogsFetch(url, { headers: { 'Authorization': `Discogs token=${store.token}` }});
       const json = await res.json();
       const results = json && json.results ? json.results : [];
       renderScanHits(results);
