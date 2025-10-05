@@ -330,61 +330,32 @@
     return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c]));
   }
   
-  // Expose API
-  window.login = login;
-  window.logout = function(){
-    store.token = ''; store.user = '';
-    const t = document.getElementById('token'); if (t) t.value = '';
-    const u = document.getElementById('username'); if (u) u.value = '';
-    showView('login'); setStatus('Signed out');
-  };
-  window.toggleCollection = toggleCollection;
-  window.clearSearch = clearSearch;
-  window.renderCollection = renderCollection;
-  window.openScan = openScan;
-  window.closeScan = closeScan;
-  window.searchBarcode = searchBarcode;
-  window.addRelease = addRelease;
-  window.showDetail = showDetail;
-  window.openRelease = openRelease;
-  window.setPage = setPage;
-  window.closeModal = closeModal;
-  
-  // Auto-login if credentials exist
-  window.addEventListener('DOMContentLoaded', async () => {
-    if (store.token && store.user) {
-      const t = document.getElementById('token'); if (t) t.value = store.token;
-      const u = document.getElementById('username'); if (u) u.value = store.user;
-      const w = document.getElementById('welcome'); if (w) w.textContent = `welcome back: ${store.user}`;
-      showView('loggedIn');
-      await loadCollection();
-      toggleCollection(true);
-    }
-    
-    // Apply dark background for body
-    if (document && document.body) {
-      document.body.style.background = '#000000';
-    }
-    
-    // Enable wheel-based paging (Rabbit R1 scrollwheel emits wheel events)
-    let wheelLock = false;
-    const onWheel = (e) => {
-      e.preventDefault();
-      if (wheelLock) return;
-      wheelLock = true;
-      const dir = Math.sign(e.deltaY);
-      if (dir > 0) {
-        window.setPage((typeof currentPage!=='undefined'? currentPage:1) + 1);
-      } else if (dir < 0) {
-        window.setPage((typeof currentPage!=='undefined'? currentPage:1) - 1);
-      }
-      setTimeout(() => { wheelLock = false; }, 180);
-    };
-    window.addEventListener('DOMContentLoaded', async () => {
+ // Expose API
+window.login = login;
+window.logout = function(){
+  store.token = ''; store.user = '';
+  const t = document.getElementById('token'); if (t) t.value = '';
+  const u = document.getElementById('username'); if (u) u.value = '';
+  showView('login'); setStatus('Signed out');
+};
+window.toggleCollection = toggleCollection;
+window.clearSearch = clearSearch;
+window.renderCollection = renderCollection;
+window.openScan = openScan;
+window.closeScan = closeScan;
+window.searchBarcode = searchBarcode;
+window.addRelease = addRelease;
+window.showDetail = showDetail;
+window.openRelease = openRelease;
+window.setPage = setPage;
+window.closeModal = closeModal;
+
+// EINZIGER globaler Initialisierer
+window.addEventListener('DOMContentLoaded', async () => {
   if (store.token && store.user) {
     const t = document.getElementById('token'); if (t) t.value = store.token;
     const u = document.getElementById('username'); if (u) u.value = store.user;
-    const w = document.getElementById('welcome'); if (w) w.textContent = `Welcome back: ${store.user}`;
+    const w = document.getElementById('welcome'); if (w) w.textContent = `welcome back: ${store.user}`;
     showView('loggedIn');
     await loadCollection();
     toggleCollection(true);
@@ -428,3 +399,4 @@
     setTimeout(unlockScroll, 150);
   });
 });
+
