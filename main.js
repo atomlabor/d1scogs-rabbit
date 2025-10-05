@@ -1,5 +1,5 @@
-// Discogs R1 - main.js
-// UI fully in English, R1 grid/paging view. Adds full Rabbit R1 scrollwheel support.
+// D1scogs r1 - main.js
+// UI fully in English, r1 grid/paging view. Adds full Rabbit r1 scrollwheel support.
 (function(){
   // Simple store using localStorage
   const store = {
@@ -145,10 +145,23 @@
               <div class="title">${escapeHtml(x.title)}</div>
               <div class="meta">${escapeHtml(x.artist)} • ${escapeHtml(String(x.year||''))}</div>
             </div>
-            <div class="actions">
-              <button onclick="window.showDetail('${x.id}')" class="btn-info" title="Details">ℹ️</button>
-              <button onclick="window.openRelease('${x.id}')" class="btn-ext" title="Open">🔗</button>
-            </div>
+<div class="actions">
+  <button onclick="window.showDetail('${x.id}')" class="btn-info" title="details">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="display:inline-block;vertical-align:middle" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2"/>
+      <rect x="9" y="8" width="2" height="6" rx="1" fill="currentColor"/>
+      <rect x="9" y="5" width="2" height="2" rx="1" fill="currentColor"/>
+    </svg>
+  </button>
+  <button onclick="window.openRelease('${x.id}')" class="btn-ext" title="open">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="display:inline-block;vertical-align:middle" xmlns="http://www.w3.org/2000/svg">
+      <rect x="4" y="8" width="8" height="8" rx="2" stroke="currentColor" stroke-width="2" fill="none"/>
+      <path d="M10 10 L16 4" stroke="currentColor" stroke-width="2"/>
+      <polyline points="13 4, 16 4, 16 7" stroke="currentColor" stroke-width="2" fill="none"/>
+    </svg>
+  </button>
+</div>
+
           </div>
         `).join('')}
       </div>
@@ -163,7 +176,7 @@
   function clearSearch(){ const s = document.getElementById('searchInput'); if(s){ s.value=''; currentPage=1; renderCollection(); } }
   
   function toggleCollection(show){
-    if (!store.token) { setStatus('Please sign in first', 'error'); return; }
+    if (!store.token) { setStatus('please sign in first', 'error'); return; }
     const v = document.getElementById('collectionView');
     if (v) v.classList.toggle('active', !!show);
     renderCollection();
@@ -183,10 +196,10 @@
       const year = r.year || '';
       const tracks = (r.tracklist||[]).slice(0,10).map(t => `${t.position||''} ${t.title||''}`).join(' | ');
       openModal({
-        title: r.title || 'Unknown',
+        title: r.title || 'unknown',
         content: `
           <div class="detail-content">
-            <img src="${cover}" alt="${escapeHtml(r.title || 'Unknown')}" class="detail-cover">
+            <img src="${cover}" alt="${escapeHtml(r.title || 'unknown')}" class="detail-cover">
             <div class="detail-info">
               <div><strong>Artist:</strong> ${escapeHtml(artist)}</div>
               <div><strong>Year:</strong> ${escapeHtml(String(year))}</div>
@@ -222,7 +235,7 @@
   
   // Scan overlay and barcode search
   function openScan(){
-    if(!store.token){ setStatus('Please sign in first', 'error'); return; }
+    if(!store.token){ setStatus('please sign in first', 'error'); return; }
     document.getElementById('scanOverlay').classList.add('active');
     document.getElementById('codeInput').focus();
   }
@@ -235,8 +248,8 @@
   
   async function searchBarcode(){
     const code = document.getElementById('codeInput').value.trim();
-    if (!code){ setStatus('Please enter a barcode', 'error'); return; }
-    setStatus('Searching barcode...');
+    if (!code){ setStatus('please enter a barcode number', 'error'); return; }
+    setStatus('searching barcode...');
     try{
       const url = `https://api.discogs.com/database/search?barcode=${encodeURIComponent(code)}&token=${encodeURIComponent(store.token)}`;
       const res = await discogsFetch(url, { headers: { 'Authorization': `Discogs token=${store.token}` }});
@@ -245,7 +258,7 @@
       renderScanHits(results);
       setStatus(results.length ? `${results.length} hits` : 'No hits');
     } catch(e){
-      setStatus('Barcode search failed: ' + e.message, 'error');
+      setStatus('barcode search failed: ' + e.message, 'error');
     }
   }
   
@@ -267,11 +280,24 @@
             <div class="hit-title">${escapeHtml(title)}</div>
             <div class="hit-meta">${escapeHtml([year, format].filter(Boolean).join(' • '))}</div>
           </div>
-          <div class="hit-actions">
-            <button onclick="window.addRelease(${id})" class="btn-add" title="Add to Collection">+</button>
-            <button onclick="window.showDetail(${id})" class="btn-info" title="Details">ℹ️</button>
-            <button onclick="window.openRelease(${id})" class="btn-ext" title="Open">🔗</button>
-          </div>
+<div class="hit-actions">
+  <button onclick="window.addRelease(${id})" class="btn-add" title="add to collection">+</button>
+  <button onclick="window.showDetail(${id})" class="btn-info" title="details">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="display:inline-block;vertical-align:middle" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2"/>
+      <rect x="9" y="8" width="2" height="6" rx="1" fill="currentColor"/>
+      <rect x="9" y="5" width="2" height="2" rx="1" fill="currentColor"/>
+    </svg>
+  </button>
+  <button onclick="window.openRelease(${id})" class="btn-ext" title="open">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="display:inline-block;vertical-align:middle" xmlns="http://www.w3.org/2000/svg">
+      <rect x="4" y="8" width="8" height="8" rx="2" stroke="currentColor" stroke-width="2" fill="none"/>
+      <path d="M10 10 L16 4" stroke="currentColor" stroke-width="2"/>
+      <polyline points="13 4, 16 4, 16 7" stroke="currentColor" stroke-width="2" fill="none"/>
+    </svg>
+  </button>
+</div>
+
         </div>
       `;
     }).join('');
@@ -284,7 +310,7 @@
       const r = await res.json();
       const entry = {
         id: r.id,
-        title: r.title || 'Unknown',
+        title: r.title || 'unknown',
         artist: (r.artists && r.artists[0]?.name) || 'Unknown',
         year: r.year || '',
         thumb: (r.thumb || (r.images && r.images[0]?.uri) || ''),
@@ -329,7 +355,7 @@
     if (store.token && store.user) {
       const t = document.getElementById('token'); if (t) t.value = store.token;
       const u = document.getElementById('username'); if (u) u.value = store.user;
-      const w = document.getElementById('welcome'); if (w) w.textContent = `Welcome back: ${store.user}`;
+      const w = document.getElementById('welcome'); if (w) w.textContent = `welcome back: ${store.user}`;
       showView('loggedIn');
       await loadCollection();
       toggleCollection(true);
