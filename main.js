@@ -380,14 +380,51 @@
       }
       setTimeout(() => { wheelLock = false; }, 180);
     };
-    window.addEventListener('wheel', onWheel, { passive: false });
-    
+    window.addEventListener('DOMContentLoaded', async () => {
+  if (store.token && store.user) {
+    const t = document.getElementById('token'); if (t) t.value = store.token;
+    const u = document.getElementById('username'); if (u) u.value = store.user;
+    const w = document.getElementById('welcome'); if (w) w.textContent = `Welcome back: ${store.user}`;
+    showView('loggedIn');
+    await loadCollection();
+    toggleCollection(true);
+  }
+
+  // Apply dark background for body
+  if (document && document.body) {
+    document.body.style.background = '#000000';
+  }
+
+  // --- UNIVERSAL R1 SCROLLWHEEL + KEY SUPPORT ---
+  (function(){
+    document.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      if (e.deltaY < 0) window.dispatchEvent(new CustomEvent('scrollUp'));
+      if (e.deltaY > 0) window.dispatchEvent(new CustomEvent('scrollDown'));
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'ArrowUp') { e.preventDefault(); window.dispatchEvent(new CustomEvent('scrollUp')); }
+      if (e.code === 'ArrowDown') { e.preventDefault(); window.dispatchEvent(new CustomEvent('scrollDown')); }
+    });
     if (window.rabbit && typeof window.rabbit.onScroll === 'function') {
       window.rabbit.onScroll((delta) => {
-        const dir = Math.sign(delta);
-        if (dir > 0) window.setPage((typeof currentPage!=='undefined'? currentPage:1) + 1);
-        else if (dir < 0) window.setPage((typeof currentPage!=='undefined'? currentPage:1) - 1);
+        if (delta < 0) window.dispatchEvent(new CustomEvent('scrollUp'));
+        if (delta > 0) window.dispatchEvent(new CustomEvent('scrollDown'));
       });
     }
+  })();
+
+  // Paging by custom events (debounced)
+  let scrollLock = false;
+  function unlockScroll() { scrollLock = false; }
+  window.addEventListener('scrollUp', () => {
+    if (scrollLock) return; scrollLock = true;
+    setPage(currentPage - 1);
+    setTimeout(unlockScroll, 150);
   });
-})();
+  window.addEventListener('scrollDown', () => {
+    if (scrollLock) return; scrollLock = true;
+    setPage(currentPage + 1);
+    setTimeout(unlockScroll, 150);
+  });
+});
