@@ -60,16 +60,16 @@
     const userEl = document.getElementById('username');
     const token = tokenEl ? tokenEl.value.trim() : '';
     const username = userEl ? userEl.value.trim() : '';
-    if (!token || !username) { setStatus('Please enter token and username', 'error'); return; }
-    setStatus('Signing in...');
+    if (!token || !username) { setStatus('please enter token and username', 'error'); return; }
+    setStatus('signing in...');
     try {
       const profileRes = await discogsFetch(`https://api.discogs.com/users/${encodeURIComponent(username)}`, {
-        headers: { 'Authorization': `Discogs token=${token}` }
+        headers: { 'authorization': `discogs token=${token}` }
       });
       const data = await profileRes.json();
-      if (!data || !data.username) throw new Error('Invalid API response');
+      if (!data || !data.username) throw new Error('invalid API response');
       store.token = token; store.user = username;
-      const w = document.getElementById('welcome'); if (w) w.textContent = `Signed in: ${data.username}`;
+      const w = document.getElementById('welcome'); if (w) w.textContent = `signed in: ${data.username}`;
       showView('loggedIn');
       setStatus('');
       // Load real collection after login
@@ -88,13 +88,13 @@
       let page = 1; const perPage = 100; let all = [];
       while (true){
         const url = `https://api.discogs.com/users/${encodeURIComponent(store.user)}/collection/folders/0/releases?token=${encodeURIComponent(store.token)}&page=${page}&per_page=${perPage}`;
-        const res = await discogsFetch(url, { headers: { 'Authorization': `Discogs token=${store.token}` }});
+        const res = await discogsFetch(url, { headers: { 'authorization': `discogs token=${store.token}` }});
         const json = await res.json();
         const items = (json && json.releases) ? json.releases : [];
         all = all.concat(items.map(r => ({
           id: r.id || (r.instance_id ? `inst-${r.instance_id}` : (r.basic_information?.id || '')),
-          title: r.basic_information?.title || 'Unknown',
-          artist: (r.basic_information?.artists?.[0]?.name) || 'Unknown',
+          title: r.basic_information?.title || 'unknown',
+          artist: (r.basic_information?.artists?.[0]?.name) || 'unknown',
           year: r.basic_information?.year || '',
           thumb: r.basic_information?.thumb || '',
           label: (r.basic_information?.labels?.[0]?.name) || '',
@@ -106,9 +106,9 @@
       store.collection = all;
       currentPage = 1; // reset paging on load
       renderCollection();
-      setStatus(`Collection loaded: ${all.length} items`, 'success');
+      setStatus(`collection loaded: ${all.length} items`, 'success');
     } catch(e){
-      setStatus('Could not load collection: ' + e.message, 'error');
+      setStatus('could not load collection: ' + e.message, 'error');
     }
   }
   
@@ -201,11 +201,11 @@
           <div class="detail-content">
             <img src="${cover}" alt="${escapeHtml(r.title || 'unknown')}" class="detail-cover">
             <div class="detail-info">
-              <div><strong>Artist:</strong> ${escapeHtml(artist)}</div>
-              <div><strong>Year:</strong> ${escapeHtml(String(year))}</div>
-              <div><strong>Label:</strong> ${escapeHtml(label)}</div>
-              <div><strong>Genre/Style:</strong> ${escapeHtml([genres, styles].filter(Boolean).join(' / '))}</div>
-              <div><strong>Tracklist:</strong> ${escapeHtml(tracks)}</div>
+              <div><strong>artist:</strong> ${escapeHtml(artist)}</div>
+              <div><strong>year:</strong> ${escapeHtml(String(year))}</div>
+              <div><strong>label:</strong> ${escapeHtml(label)}</div>
+              <div><strong>genre/Style:</strong> ${escapeHtml([genres, styles].filter(Boolean).join(' / '))}</div>
+              <div><strong>tracklist:</strong> ${escapeHtml(tracks)}</div>
             </div>
           </div>
         `
@@ -252,7 +252,7 @@
     setStatus('searching barcode...');
     try{
       const url = `https://api.discogs.com/database/search?barcode=${encodeURIComponent(code)}&token=${encodeURIComponent(store.token)}`;
-      const res = await discogsFetch(url, { headers: { 'Authorization': `Discogs token=${store.token}` }});
+      const res = await discogsFetch(url, { headers: { 'authorization': `discogs token=${store.token}` }});
       const json = await res.json();
       const results = json && json.results ? json.results : [];
       renderScanHits(results);
@@ -268,7 +268,7 @@
     if (!results.length){ wrap.hidden = true; wrap.innerHTML = ''; return; }
     wrap.hidden = false;
     wrap.innerHTML = results.slice(0,10).map(r => {
-      const title = r.title || 'Unknown';
+      const title = r.title || 'unknown';
       const year = r.year || '';
       const format = (r.format && r.format.join(', ')) || '';
       const id = r.id;
@@ -283,14 +283,14 @@
 <div class="hit-actions">
   <button onclick="window.addRelease(${id})" class="btn-add" title="add to collection">+</button>
   <button onclick="window.showDetail(${id})" class="btn-info" title="details">
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="display:inline-block;vertical-align:middle" xmlns="http://www.w3.org/2000/svg">
+    <svg width="10" height="10" viewBox="0 0 20 20" fill="none" style="display:inline-block;vertical-align:middle" xmlns="http://www.w3.org/2000/svg">
       <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2"/>
       <rect x="9" y="8" width="2" height="6" rx="1" fill="currentColor"/>
       <rect x="9" y="5" width="2" height="2" rx="1" fill="currentColor"/>
     </svg>
   </button>
   <button onclick="window.openRelease(${id})" class="btn-ext" title="open">
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="display:inline-block;vertical-align:middle" xmlns="http://www.w3.org/2000/svg">
+    <svg width="10" height="10" viewBox="0 0 20 20" fill="none" style="display:inline-block;vertical-align:middle" xmlns="http://www.w3.org/2000/svg">
       <rect x="4" y="8" width="8" height="8" rx="2" stroke="currentColor" stroke-width="2" fill="none"/>
       <path d="M10 10 L16 4" stroke="currentColor" stroke-width="2"/>
       <polyline points="13 4, 16 4, 16 7" stroke="currentColor" stroke-width="2" fill="none"/>
@@ -311,7 +311,7 @@
       const entry = {
         id: r.id,
         title: r.title || 'unknown',
-        artist: (r.artists && r.artists[0]?.name) || 'Unknown',
+        artist: (r.artists && r.artists[0]?.name) || 'unknown',
         year: r.year || '',
         thumb: (r.thumb || (r.images && r.images[0]?.uri) || ''),
         label: (r.labels && r.labels[0]?.name) || '',
