@@ -301,27 +301,27 @@
     </style>
 </head>
 <body>
-    <div class="header">DISCOGS R1</div>
+    <div class="header">d1scogs r1</div>
     
     <div class="card" id="loginView">
         <div class="field">
-            <label for="token">Token</label>
-            <input id="token" placeholder="Personal Access Token" type="text">
+            <label for="token">token</label>
+            <input id="token" placeholder="personal access token" type="text">
         </div>
         <div class="field">
-            <label for="username">Username</label>
-            <input id="username" placeholder="Discogs Username" type="text">
+            <label for="username">username</label>
+            <input id="username" placeholder="discogs username" type="text">
         </div>
         <button onclick="window.login()">Sign in</button>
         <div class="status" id="status"></div>
     </div>
     
     <div class="card logged-in" id="loggedInView">
-        <div class="welcome" id="welcome">Signed in</div>
+        <div class="welcome" id="welcome">signed in</div>
         <div class="actions">
-            <button onclick="window.toggleCollection(true)">Collection</button>
-            <button onclick="window.openScan()">Scan</button>
-            <button onclick="window.logout()">Logout</button>
+            <button onclick="window.toggleCollection(true)">collection</button>
+            <button onclick="window.openScan()">barcode</button>
+            <button onclick="window.logout()">logout</button>
         </div>
         
         <div id="collectionView">
@@ -346,11 +346,11 @@
     <div class="overlay" id="scanOverlay" aria-label="Scan" aria-modal="true" role="dialog">
         <div class="scan-card">
             <div class="scan-area" id="scanArea">
-                <input id="codeInput" inputmode="numeric" placeholder="Barcode e.g. 4029759123456" style="width:100%;background:#151515;border:1px solid #333;border-radius:6px;color:#e0e0e0;padding:8px;" type="text">
+                <input id="codeInput" inputmode="numeric" placeholder="barcode e.g. 4029759123456" style="width:100%;background:#151515;border:1px solid #333;border-radius:6px;color:#e0e0e0;padding:8px;" type="text">
             </div>
             <div class="scan-actions">
-                <button onclick="window.searchBarcode()">Search</button>
-                <button onclick="window.closeScan()">Back</button>
+                <button onclick="window.searchBarcode()">search</button>
+                <button onclick="window.closeScan()">back</button>
             </div>
             <div class="hits" hidden id="scanHits"></div>
         </div>
