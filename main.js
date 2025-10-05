@@ -144,26 +144,30 @@
             <div class="info">
               <div class="title">${escapeHtml(x.title)}</div>
               <div class="meta">${escapeHtml(x.artist)} • ${escapeHtml(String(x.year||''))}</div>
-            </div><div class="actions">  <button class="btn-info" onclick="window.showDetail('${x.id}')" title="details">
-    <svg fill="none" height="20" style="display:inline-block;vertical-align:middle" viewbox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2"></circle>
-      <rect fill="currentColor" height="6" rx="1" width="2" x="9" y="8"></rect>
-      <rect fill="currentColor" height="2" rx="1" width="2" x="9" y="5"></rect>
-    </svg>
-  </button>
-  <button class="btn-ext" onclick="window.openRelease('${x.id}')" title="open">
-    <svg fill="none" height="20" style="display:inline-block;vertical-align:middle" viewbox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg">
-      <rect fill="none" height="8" rx="2" stroke="currentColor" stroke-width="2" width="8" x="4" y="8"></rect>
-      <path d="M10 10 L16 4" stroke="currentColor" stroke-width="2"></path>
-      <polyline fill="none" points="13 4, 16 4, 16 7" stroke="currentColor" stroke-width="2"></polyline>
-    </svg>
-  </button></div>          </div>
+            </div>
+            <div class="actions">
+              <button class="btn-info" onclick="window.showDetail('${x.id}')" title="details">
+                <svg fill="none" height="20" style="display:inline-block;vertical-align:middle" viewBox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2"></circle>
+                  <rect fill="currentColor" height="6" rx="1" width="2" x="9" y="8"></rect>
+                  <rect fill="currentColor" height="2" rx="1" width="2" x="9" y="5"></rect>
+                </svg>
+              </button>
+              <button class="btn-ext" onclick="window.openRelease('${x.id}')" title="open">
+                <svg fill="none" height="20" style="display:inline-block;vertical-align:middle" viewBox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg">
+                  <rect fill="none" height="8" rx="2" stroke="currentColor" stroke-width="2" width="8" x="4" y="8"></rect>
+                  <path d="M10 10 L16 4" stroke="currentColor" stroke-width="2"></path>
+                  <polyline fill="none" points="13 4, 16 4, 16 7" stroke="currentColor" stroke-width="2"></polyline>
+                </svg>
+              </button>
+            </div>
+          </div>
         `).join('')}
       </div>
       <div class="paging">
-        <button :="" onclick="window.setPage(${currentPage - 1})">‹</button>
+        <button onclick="window.setPage(${currentPage - 1})">‹</button>
         <span class="page-info">${currentPage}/${totalPages}</span>
-        <button onclick="window.setPage(${currentPage + 1})">= totalPages ? 'disabled' : ''}&gt;›</button>
+        <button onclick="window.setPage(${currentPage + 1})">›</button>
       </div>
     `;
   }
@@ -274,16 +278,17 @@
           <div class="hit-info">
             <div class="hit-title">${escapeHtml(title)}</div>
             <div class="hit-meta">${escapeHtml([year, format].filter(Boolean).join(' • '))}</div>
-          </div><div class="hit-actions">  <button class="btn-add" onclick="window.addRelease(${id})" title="add to collection">+</button>
-  <button class="btn-info" onclick="window.showDetail(${id})" title="details">
-    <svg fill="none" height="20" style="display:inline-block;vertical-align:middle" viewbox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2"></circle>
-      <rect fill="currentColor" height="6" rx="1" width="2" x="9" y="8"></rect>
-      <rect fill="currentColor" height="2" rx="1" width="2" x="9" y="5"></rect>
-    </svg>
-  </button>
-  <button class="btn-ext" onclick="window.openRelease(${id})" title="open">
-    <svg fill="none" height="20" style="display:inline-block;vertical-align:middle" viewbox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg">
-      <rect fill="none" height="8" rx="2" stroke="currentColor" stroke-width="2" width="8" x="4" y="8"></rect>
-      <path d="M10 10 L16 4" stroke="currentColor" stroke-width="2"></path>
-      <polyline fill="none" points="13 4, 16 4, 16 7"
+          </div>
+          <div class="hit-actions">
+            <button class="btn-add" onclick="window.addRelease(${id})" title="add to collection">+</button>
+            <button class="btn-info" onclick="window.showDetail(${id})" title="details">
+              <svg fill="none" height="20" style="display:inline-block;vertical-align:middle" viewBox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2"></circle>
+                <rect fill="currentColor" height="6" rx="1" width="2" x="9" y="8"></rect>
+                <rect fill="currentColor" height="2" rx="1" width="2" x="9" y="5"></rect>
+              </svg>
+            </button>
+            <button class="btn-ext" onclick="window.openRelease(${id})" title="open">
+              <svg fill="none" height="20" style="display:inline-block;vertical-align:middle" viewBox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg">
+                <rect fill="none" height="8" rx="2" stroke="currentColor" stroke-width="2" width="8" x="4" y="8"></rect>
+                <path d="M10 10 L16 4" stroke="currentColor" stroke-width="2"></path
