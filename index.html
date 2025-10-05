@@ -1,112 +1,361 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=240,height=282,viewport-fit=cover,user-scalable=no,maximum-scale=1.0,initial-scale=1.0"/>
-    <title>Discogs R1</title>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=240,height=282,viewport-fit=cover,user-scalable=no,maximum-scale=1.0,initial-scale=1.0">
+    <title>d1scogs r1</title>
     <style>
-      * { box-sizing: border-box; margin: 0; padding: 0; }
-      html, body { height: 100%; background: #1a1a1a; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; display: grid; place-items: center; color: #e0e0e0; }
-      .frame { width: 240px; height: 282px; background: #0a0a0a; border: 1px solid #333; border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; }
-      .logo { padding: 16px 0 12px; text-align: center; font-size: 16px; font-weight: 700; color: #ff6a00; letter-spacing: .5px; }
-      .card { flex: 1; padding: 0 12px 12px; display: flex; flex-direction: column; gap: 10px; }
-      .field { display: flex; flex-direction: column; gap: 4px; }
-      label { font-size: 11px; color: #bbb; font-weight: 500; }
-      input { width: 100%; padding: 10px; background: #151515; border: 1px solid #333; border-radius: 6px; color: #e0e0e0; font-size: 13px; outline: none; }
-      input:focus { border-color: #ff6a00; }
-      .btn { width: 100%; padding: 12px; background: #ff6a00; border: none; border-radius: 10px; color: #000; font-size: 14px; font-weight: 800; cursor: pointer; margin-top: 2px; }
-      .btn:active { transform: translateY(1px); }
-      .status { font-size: 11px; text-align: center; min-height: 16px; color: #999; }
-      .status.success { color: #4ade80; } .status.error { color: #f87171; }
-      .logged-in { display: none; flex-direction: column; gap: 8px; }
-      .logged-in.active { display: flex; }
-      .welcome { font-size: 13px; text-align: center; color: #4ade80; font-weight: 700; }
-      .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-      .btn-secondary { padding: 10px; background: #1a1a1a; border: 1px solid #333; border-radius: 10px; color: #e0e0e0; font-size: 12px; font-weight: 700; cursor: pointer; }
-      .btn-secondary:active { transform: translateY(1px); }
-      /* R1 grid and pager (no scroll) */
-      #collectionView { display: none; flex: 1; overflow: hidden; gap: 6px; }
-      #collectionView.active { display: flex; flex-direction: column; }
-      .search { display: flex; gap: 6px; }
-      .grid { display: grid; grid-template-columns: 1fr; gap: 6px; }
-      .card-item { display: grid; grid-template-columns: 40px 1fr; grid-template-rows: auto auto auto; gap: 4px 8px; align-items: center; padding: 6px; border: 1px solid #222; border-radius: 8px; }
-      .thumb { width: 40px; height: 40px; background: #111 center/cover no-repeat; border-radius: 6px; grid-row: span 3; }
-      .title { font-size: 12px; font-weight: 700; }
-      .meta { font-size: 11px; color: #aaa; }
-      .actions-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-      .btn-mini { padding: 6px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px; color: #e0e0e0; font-size: 11px; font-weight: 700; cursor: pointer; }
-      .pager { display: grid; grid-template-columns: 1fr auto 1fr; gap: 6px; align-items: center; margin-top: 6px; }
-      .page-indicator { text-align: center; font-size: 11px; color: #bbb; }
-      /* Scan overlay */
-      #scanOverlay, #detailOverlay { position: fixed; inset: 0; display: none; place-items: center; background: rgba(0,0,0,.8); }
-      #scanOverlay.active, #detailOverlay.active { display: grid; }
-      .scan-card, .detail-card { width: 220px; background: #0f0f0f; border: 1px solid #333; border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
-      .scan-area { min-height: 40px; border: 1px dashed #444; border-radius: 10px; display: grid; place-items: center; color: #bbb; font-size: 12px; padding: 6px; }
-      .scan-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-      .hits { display: grid; gap: 6px; border: 1px solid #222; border-radius: 8px; padding: 6px; }
-      .hit { display: grid; gap: 6px; border-bottom: 1px solid #222; padding-bottom: 6px; }
-      .hit:last-child{ border-bottom: none; }
-      .hit-row { display: grid; grid-template-columns: 36px 1fr; gap: 8px; align-items: center; }
-      .hit-thumb { width: 36px; height: 36px; background: #111 center/cover no-repeat; border-radius: 6px; }
-      .hit-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-      /* Detail */
-      .detail { display: grid; grid-template-columns: 60px 1fr; gap: 8px; align-items: start; }
-      .detail-cover { width: 60px; height: 60px; background: #111 center/cover no-repeat; border-radius: 8px; }
-      .detail-lines { display: grid; gap: 4px; font-size: 12px; }
-      .modal-header { display: grid; grid-template-columns: 1fr auto; gap: 6px; align-items: center; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            font-size: 11px;
+            background: #000;
+            color: #e0e0e0;
+            width: 240px;
+            height: 282px;
+            overflow: hidden;
+            position: fixed;
+        }
+        .header {
+            text-align: center;
+            padding: 8px;
+            background: #ff6b00;
+            color: #000;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        .card {
+            padding: 12px;
+            margin: 8px;
+            background: #1a1a1a;
+            border-radius: 8px;
+            border: 1px solid #333;
+        }
+        #loginView {
+            display: flex;
+            flex-direction: column;
+            height: calc(100% - 40px);
+            justify-content: center;
+        }
+        #loggedInView {
+            display: none;
+            height: calc(100% - 40px);
+        }
+        #loggedInView.active {
+            display: block;
+        }
+        .field {
+            margin-bottom: 10px;
+        }
+        label {
+            display: block;
+            margin-bottom: 4px;
+            color: #ccc;
+            font-size: 10px;
+        }
+        input {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #444;
+            border-radius: 4px;
+            background: #222;
+            color: #e0e0e0;
+            font-size: 10px;
+        }
+        button {
+            background: #ff6b00;
+            color: #000;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 10px;
+        }
+        button:hover {
+            background: #e55a00;
+        }
+        button:disabled {
+            background: #666;
+            color: #999;
+            cursor: not-allowed;
+        }
+        .status {
+            margin-top: 8px;
+            padding: 6px;
+            border-radius: 4px;
+            font-size: 9px;
+            text-align: center;
+        }
+        .status.error {
+            background: #ff4444;
+            color: #fff;
+        }
+        .status.success {
+            background: #44ff44;
+            color: #000;
+        }
+        .welcome {
+            margin-bottom: 12px;
+            color: #ff6b00;
+            font-weight: bold;
+        }
+        .actions {
+            display: flex;
+            gap: 8px;
+        }
+        .actions button {
+            flex: 1;
+            font-size: 9px;
+            padding: 6px;
+        }
+        #collectionView {
+            display: none;
+            height: 100%;
+            overflow: hidden;
+        }
+        #collectionView.active {
+            display: block;
+        }
+        .search {
+            padding: 8px;
+            background: #1a1a1a;
+        }
+        .search input {
+            width: 100%;
+            font-size: 9px;
+        }
+        .search button {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 2px 6px;
+            font-size: 8px;
+        }
+        .grid {
+            padding: 4px;
+            max-height: 180px;
+            overflow: hidden;
+        }
+        .item {
+            display: flex;
+            align-items: center;
+            padding: 4px;
+            margin-bottom: 2px;
+            background: #222;
+            border-radius: 4px;
+            border: 1px solid #333;
+        }
+        .thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 2px;
+            margin-right: 6px;
+            object-fit: cover;
+        }
+        .info {
+            flex: 1;
+            min-width: 0;
+        }
+        .title {
+            font-size: 9px;
+            font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .meta {
+            font-size: 8px;
+            color: #aaa;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .actions {
+            display: flex;
+            gap: 2px;
+        }
+        .btn-info, .btn-ext, .btn-add {
+            background: #444;
+            color: #fff;
+            border: none;
+            padding: 2px 4px;
+            border-radius: 2px;
+            font-size: 8px;
+            cursor: pointer;
+            width: 20px;
+            height: 20px;
+        }
+        .paging {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            padding: 6px;
+            background: #1a1a1a;
+        }
+        .paging button {
+            padding: 4px 8px;
+            font-size: 10px;
+        }
+        .page-info {
+            font-size: 9px;
+            color: #ccc;
+        }
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 240px;
+            height: 282px;
+            background: rgba(0,0,0,0.9);
+            display: none;
+            z-index: 1000;
+        }
+        .overlay.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .detail-card, .scan-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 12px;
+            max-width: 220px;
+            max-height: 260px;
+            overflow-y: auto;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 4px;
+        }
+        .modal-header .title {
+            font-weight: bold;
+            font-size: 10px;
+        }
+        .detail-content {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .detail-cover {
+            width: 60px;
+            height: 60px;
+            border-radius: 4px;
+            object-fit: cover;
+        }
+        .detail-info div {
+            font-size: 8px;
+            margin-bottom: 2px;
+        }
+        .scan-area {
+            margin-bottom: 8px;
+        }
+        .scan-actions {
+            display: flex;
+            gap: 4px;
+        }
+        .hits {
+            max-height: 120px;
+            overflow-y: auto;
+        }
+        .hit-item {
+            display: flex;
+            align-items: center;
+            padding: 4px;
+            margin-bottom: 2px;
+            background: #222;
+            border-radius: 4px;
+        }
+        .hit-thumb {
+            width: 20px;
+            height: 20px;
+            margin-right: 4px;
+            border-radius: 2px;
+        }
+        .hit-info {
+            flex: 1;
+        }
+        .hit-title {
+            font-size: 8px;
+            font-weight: bold;
+        }
+        .hit-meta {
+            font-size: 7px;
+            color: #aaa;
+        }
+        .hit-actions {
+            display: flex;
+            gap: 2px;
+        }
     </style>
-  </head>
-  <body>
-    <div class="frame">
-      <div class="logo">DISCOGS R1</div>
-      <div class="card" id="loginView">
+</head>
+<body>
+    <div class="header">DISCOGS R1</div>
+    
+    <div class="card" id="loginView">
         <div class="field">
-          <label for="token">Token</label>
-          <input id="token" placeholder="Personal Access Token" type="text"/>
+            <label for="token">Token</label>
+            <input id="token" placeholder="Personal Access Token" type="text">
         </div>
         <div class="field">
-          <label for="username">Username</label>
-          <input id="username" placeholder="Discogs Username" type="text"/>
+            <label for="username">Username</label>
+            <input id="username" placeholder="Discogs Username" type="text">
         </div>
-        <button class="btn" onclick="window.login()">Sign in</button>
+        <button onclick="window.login()">Sign in</button>
         <div class="status" id="status"></div>
-      </div>
-      <div class="card logged-in" id="loggedInView">
+    </div>
+    
+    <div class="card logged-in" id="loggedInView">
         <div class="welcome" id="welcome">Signed in</div>
         <div class="actions">
-          <button class="btn-secondary" onclick="window.toggleCollection(true)">Collection</button>
-          <button class="btn-secondary" onclick="window.openScan()">Scan</button>
+            <button onclick="window.toggleCollection(true)">Collection</button>
+            <button onclick="window.openScan()">Scan</button>
+            <button onclick="window.logout()">Logout</button>
         </div>
+        
         <div id="collectionView">
-          <div class="search">
-            <input id="searchInput" oninput="window.renderCollection()" placeholder="Search collection" type="text"/>
-            <button class="btn-secondary" onclick="window.clearSearch()">Clear</button>
-          </div>
-          <div id="collectionList"></div>
+            <div class="search">
+                <input id="searchInput" oninput="window.renderCollection()" placeholder="Search collection" type="text">
+                <button onclick="window.clearSearch()">×</button>
+            </div>
+            <div id="collectionList"></div>
         </div>
-        <button class="btn-secondary" onclick="window.logout()">Logout</button>
-      </div>
     </div>
-    <!-- Detail Overlay -->
-    <div id="detailOverlay" aria-label="Details" aria-modal="true" role="dialog">
-      <div class="detail-card">
-        <div class="modal-header"><div id="detailTitle" class="title"></div><button class="btn-secondary" onclick="window.closeModal()">Back</button></div>
-        <div id="detailBody"></div>
-      </div>
-    </div>
-    <!-- Scan Overlay -->
-    <div id="scanOverlay" aria-label="Scan" aria-modal="true" role="dialog">
-      <div class="scan-card">
-        <div class="scan-area" id="scanArea">
-          <input id="codeInput" inputmode="numeric" placeholder="Barcode e.g. 4029759123456" style="width:100%;background:#151515;border:1px solid #333;border-radius:6px;color:#e0e0e0;padding:8px;" type="text"/>
+    
+    <div class="overlay" id="detailOverlay" aria-label="Details" aria-modal="true" role="dialog">
+        <div class="detail-card">
+            <div class="modal-header">
+                <div id="detailTitle" class="title"></div>
+                <button onclick="window.closeModal()">×</button>
+            </div>
+            <div id="detailBody"></div>
         </div>
-        <div class="scan-actions">
-          <button class="btn-secondary" onclick="window.closeScan()">Back</button>
-          <button class="btn" onclick="window.searchBarcode()">Search</button>
-        </div>
-        <div class="hits" hidden id="scanHits"></div>
-      </div>
     </div>
-    <script src="./main.js"></script>
-  </body>
+    
+    <div class="overlay" id="scanOverlay" aria-label="Scan" aria-modal="true" role="dialog">
+        <div class="scan-card">
+            <div class="scan-area" id="scanArea">
+                <input id="codeInput" inputmode="numeric" placeholder="Barcode e.g. 4029759123456" style="width:100%;background:#151515;border:1px solid #333;border-radius:6px;color:#e0e0e0;padding:8px;" type="text">
+            </div>
+            <div class="scan-actions">
+                <button onclick="window.searchBarcode()">Search</button>
+                <button onclick="window.closeScan()">Back</button>
+            </div>
+            <div class="hits" hidden id="scanHits"></div>
+        </div>
+    </div>
+    
+    <script src="main.js"></script>
+</body>
 </html>
