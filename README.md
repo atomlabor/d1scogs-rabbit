@@ -7,7 +7,6 @@
 **Deine Plattensammlung. In der Hosentasche. Immer dabei.**
 
 Bring die Power deiner [Discogs](https://www.discogs.com/) Vinyl- und Musik-Sammlung direkt auf deinen Rabbit r1!  
-
 Völlig mobil. Absolut stylish. Und nerdy-cool. 
 
 ---
@@ -15,9 +14,9 @@ Völlig mobil. Absolut stylish. Und nerdy-cool.
 ## 🇩🇪 Deutsch
 
 ### Was ist das?
+
 d1scogs-rabbit ist deine persönliche Discogs-Collection – jederzeit griffbereit auf deinem Rabbit R1.  
 Kein überflüssiger Schnickschnack, sondern deine echte, aktuelle Sammlung.  
-
 
 ### Features
 
@@ -44,8 +43,8 @@ Kein überflüssiger Schnickschnack, sondern deine echte, aktuelle Sammlung.
 ## 🇬🇧 English
 
 ### What is it?
-d1scogs-rabbit puts your real Discogs vinyl collection into your pocket – always available, completely live, always cool!  
 
+d1scogs-rabbit puts your real Discogs vinyl collection into your pocket – always available, completely live, always cool!  
 
 ### Features
 
@@ -69,6 +68,20 @@ d1scogs-rabbit puts your real Discogs vinyl collection into your pocket – alwa
 
 ---
 
-**Viel Spaß beim Stöbern!**  
+## ☕️ Unterstütze den Entwickler!
 
-Made with ❤️ for the rabbit community, vinyl and rabbit-power | atomlabor.de
+Wenn dir die App gefällt oder nützlich ist: **Sag Danke und spendiere mir einen Kaffee auf Ko-fi!**  
+👉 [https://ko-fi.com/atomlabor](https://ko-fi.com/atomlabor)
+
+---
+
+## ☕️ Support the Developer!
+
+If you like the app or find it useful: **Say thanks and buy me a coffee on Ko-fi!**  
+👉 [https://ko-fi.com/atomlabor](https://ko-fi.com/atomlabor)
+
+---
+
+**Viel Spaß beim Stöbern!**  
+Made with ❤️ for the rabbit community, vinyl and rabbit-power  
+Mehr Projekte, Musik & Tech: [atomlabor.de](https://atomlabor.de)
