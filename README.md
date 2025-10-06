@@ -1,6 +1,6 @@
 <p align="center">
   <img src="https://github.com/atomlabor/d1scogs-rabbit/blob/main/qr.png" alt="QR Code zum Projekt" width="90" height="90" style="margin:0 18px 0 0;"/>
-  <img src="https://github.com/atomlabor/d1scogs-rabbit/blob/main/d1scogs.png" alt="d1scogs Logo" width="62" height="62" style="vertical-align:middle; margin:0 0 0 18px;"/>
+  <img src="https://github.com/atomlabor/d1scogs-rabbit/blob/main/d1scogs-app-view.png" alt="d1scogs Logo" width="640" height="480" style="vertical-align:middle; margin:0 0 0 18px;"/>
 </p>
 
 # d1scogs-rabbit
