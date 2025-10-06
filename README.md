@@ -6,7 +6,8 @@
 
 **Deine Plattensammlung. In der Hosentasche. Immer dabei.**
 
-Bring die Power deiner [Discogs](https://www.discogs.com/) Vinyl- und Musik-Sammlung direkt auf deinen Rabbit R1!  
+Bring die Power deiner [Discogs](https://www.discogs.com/) Vinyl- und Musik-Sammlung direkt auf deinen Rabbit r1!  
+
 Völlig mobil. Absolut stylish. Und nerdy-cool. 
 
 ---
@@ -15,8 +16,8 @@ Völlig mobil. Absolut stylish. Und nerdy-cool.
 
 ### Was ist das?
 d1scogs-rabbit ist deine persönliche Discogs-Collection – jederzeit griffbereit auf deinem Rabbit R1.  
-Keine Dummy-Daten, kein überflüssiger Schnickschnack, sondern deine echte, aktuelle Sammlung.  
-**Hinweis:** Es ist *kein* Barcode-Reader integriert, sondern ein superschneller Suchfilter über deine gesamte Discogs-Sammlung.
+Kein überflüssiger Schnickschnack, sondern deine echte, aktuelle Sammlung.  
+
 
 ### Features
 
@@ -44,7 +45,7 @@ Keine Dummy-Daten, kein überflüssiger Schnickschnack, sondern deine echte, akt
 
 ### What is it?
 d1scogs-rabbit puts your real Discogs vinyl collection into your pocket – always available, completely live, always cool!  
-There’s **no barcode reader** – just an ultra-fast search filter for your records and CDs straight from Discogs.
+
 
 ### Features
 
