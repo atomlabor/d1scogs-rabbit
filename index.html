@@ -218,7 +218,7 @@
             align-items: center;
             justify-content: center;
         }
-        .detail-card, .scan-card {
+        .detail-card {
             background: #1a1a1a;
             border: 1px solid #333;
             border-radius: 8px;
@@ -254,52 +254,12 @@
             font-size: 8px;
             margin-bottom: 2px;
         }
-        .scan-area {
-            margin-bottom: 8px;
-        }
-        .scan-actions {
-            display: flex;
-            gap: 4px;
-        }
-        .hits {
-            max-height: 120px;
-            overflow-y: auto;
-        }
-        .hit-item {
-            display: flex;
-            align-items: center;
-            padding: 4px;
-            margin-bottom: 2px;
-            background: #222;
-            border-radius: 4px;
-        }
-        .hit-thumb {
-            width: 20px;
-            height: 20px;
-            margin-right: 4px;
-            border-radius: 2px;
-        }
-        .hit-info {
-            flex: 1;
-        }
-        .hit-title {
-            font-size: 8px;
-            font-weight: bold;
-        }
-        .hit-meta {
-            font-size: 7px;
-            color: #aaa;
-        }
-        .hit-actions {
-            display: flex;
-            gap: 2px;
-        }
     </style>
 </head>
 <body>
     <div class="header">d1scogs r1</div>
     
-    <div class="card" id="loginView">
+    <div id="loginView" class="card">
         <div class="field">
             <label for="token">token</label>
             <input type="text" id="token" placeholder="personal access token">
@@ -309,14 +269,13 @@
             <input type="text" id="username" placeholder="discogs username">
         </div>
         <button onclick="window.login()">sign in</button>
-        <div class="status" id="status"></div>
+        <div id="status" class="status"></div>
     </div>
     
-    <div class="card logged-in" id="loggedInView">
-        <div class="welcome" id="welcome">signed in</div>
+    <div id="loggedInView" class="card logged-in">
+        <div id="welcome" class="welcome">signed in</div>
         <div class="actions">
             <button onclick="window.toggleCollection(true)">collection</button>
-            <button onclick="window.openScan()">barcode</button>
             <button onclick="window.logout()">logout</button>
         </div>
         
@@ -329,26 +288,13 @@
         </div>
     </div>
     
-    <div class="overlay" id="detailOverlay" role="dialog" aria-modal="true" aria-label="Details">
+    <div id="detailOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Details">
         <div class="detail-card">
             <div class="modal-header">
-                <div class="title" id="detailTitle"></div>
+                <div id="detailTitle" class="title"></div>
                 <button onclick="window.closeModal()">×</button>
             </div>
             <div id="detailBody"></div>
-        </div>
-    </div>
-    
-    <div class="overlay" id="scanOverlay" role="dialog" aria-modal="true" aria-label="Scan">
-        <div class="scan-card">
-            <div class="scan-area" id="scanArea">
-                <input type="text" id="codeInput" inputmode="numeric" placeholder="barcode e.g. 4029759123456" style="width:100%;background:#151515;border:1px solid #333;border-radius:6px;color:#e0e0e0;padding:8px;">
-            </div>
-            <div class="scan-actions">
-                <button onclick="window.searchBarcode()">search</button>
-                <button onclick="window.closeScan()">back</button>
-            </div>
-            <div class="hits" id="scanHits" hidden></div>
         </div>
     </div>
     
