@@ -1,9 +1,9 @@
 <p align="center">
-  <img src="https://github.com/atomlabor/d1scogs-rabbit/blob/main/qr.png" alt="QR Code zum Projekt" width="122" height="122" />
+  <img src="https://github.com/atomlabor/d1scogs-rabbit/blob/main/qr.png" alt="QR Code zum Projekt" width="90" height="90" style="margin:0 18px 0 0;"/>
+  <img src="https://github.com/atomlabor/d1scogs-rabbit/blob/main/d1scogs.png" alt="d1scogs Logo" width="62" height="62" style="vertical-align:middle; margin:0 0 0 18px;"/>
 </p>
 
 # d1scogs-rabbit
-
 **Deine Plattensammlung. In der Hosentasche. Immer dabei.**
 
 Bring die Power deiner [Discogs](https://www.discogs.com/) Vinyl- und Musik-Sammlung direkt auf deinen Rabbit r1!  
@@ -70,18 +70,18 @@ d1scogs-rabbit puts your real Discogs vinyl collection into your pocket – alwa
 
 ## ☕️ Unterstütze den Entwickler!
 
-Wenn dir die App gefällt oder nützlich ist: **Sag Danke und spendiere mir einen Kaffee auf Ko-fi!**  
+Wenn dir die App gefällt oder nützlich ist: Sag Danke und spendiere mir einen Kaffee auf Ko-fi!  
 👉 [https://ko-fi.com/atomlabor](https://ko-fi.com/atomlabor)
 
 ---
 
 ## ☕️ Support the Developer!
 
-If you like the app or find it useful: **Say thanks and buy me a coffee on Ko-fi!**  
+If you like the app or find it useful: Say thanks and buy me a coffee on Ko-fi!  
 👉 [https://ko-fi.com/atomlabor](https://ko-fi.com/atomlabor)
 
 ---
 
-**Viel Spaß beim Stöbern!**  
+Viel Spaß beim Stöbern!  
 Made with ❤️ for the rabbit community, vinyl and rabbit-power  
-Mehr Projekte, Musik & Tech: [atomlabor.de](https://atomlabor.de)
+Mehr Projekte, Musik & Tech: [atomlabor.de](https://atomlabor.de/)
