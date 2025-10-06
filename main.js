@@ -225,23 +225,70 @@
  }
  function closeModal(){ document.getElementById('detailOverlay')?.classList.remove('active'); }
 
- // Scan overlay
- function openScan(){ if(!store.token){ setStatus('please sign in first', 'error'); return; } document.getElementById('scanOverlay').classList.add('active'); document.getElementById('codeInput').focus(); }
- function closeScan(){ document.getElementById('scanOverlay').classList.remove('active'); const hits = document.getElementById('scanHits'); if(hits){ hits.hidden = true; hits.innerHTML = ''; } }
- async function searchBarcode(){
-  const code = document.getElementById('codeInput').value.trim();
-  if (!code){ setStatus('please enter a barcode number', 'error'); return; }
-  setStatus('searching barcode...');
-  try{
-    const url = `https://api.discogs.com/database/search?barcode=${encodeURIComponent(code)}&token=${encodeURIComponent(store.token)}`;
-    const res = await discogsFetch(url, { headers: { 'Authorization': `Discogs token=${store.token}` }});
+// Scan overlay
+function openScan() {
+  if (!store.token) {
+    setStatus('please sign in first', 'error');
+    return;
+  }
+  const overlay = document.getElementById('scanOverlay');
+  if (overlay) {
+    overlay.classList.add('active');
+    // Overlay AN DIE OBERKANTE setzen – optional mit JS, besser im CSS:
+    overlay.style.top = '0';
+    overlay.style.position = 'fixed';
+    overlay.style.left = '0';
+    overlay.style.right = '0';
+    overlay.style.width = '100vw';
+    overlay.style.zIndex = '2000';
+  }
+  const input = document.getElementById('codeInput');
+  if (input) input.focus();
+}
+
+function closeScan() {
+  const overlay = document.getElementById('scanOverlay');
+  if (overlay) {
+    overlay.classList.remove('active');
+    // Style zurücksetzen (optional):
+    overlay.style.position = '';
+    overlay.style.top = '';
+    overlay.style.left = '';
+    overlay.style.width = '';
+    overlay.style.zIndex = '';
+  }
+  const hits = document.getElementById('scanHits');
+  if (hits) {
+    hits.hidden = true;
+    hits.innerHTML = '';
+  }
+}
+
+async function searchBarcode() {
+  const codeEl = document.getElementById('codeInput');
+  const code = codeEl ? codeEl.value.trim() : '';
+  if (!store.token) {
+    setStatus('please sign in first', 'error');
+    return;
+  }
+  if (!code) {
+    setStatus('please enter a barcode number', 'error');
+    return;
+  }
+  setStatus('searching barcode…');
+  try {
+    const url = `https://api.discogs.com/database/search?barcode=${encodeURIComponent(code)}&type=release&token=${encodeURIComponent(store.token)}`;
+    const res = await discogsFetch(url, { headers: { 'Authorization': `Discogs token=${store.token}` } });
     const json = await res.json();
     const results = json && json.results ? json.results : [];
     renderScanHits(results);
     setStatus(results.length ? `${results.length} hits` : 'No hits');
-  } catch(e){ setStatus('barcode search failed: ' + e.message, 'error'); }
- }
- function renderScanHits(results){ /* unchanged for brevity */ }
+  } catch (e) {
+    setStatus('Barcode search failed: ' + e.message, 'error');
+  }
+}
+function renderScanHits(results) { /* unchanged for brevity */ }
+
 
  // Expose API
  window.login = login;
