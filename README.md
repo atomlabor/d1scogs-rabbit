@@ -3,6 +3,8 @@
   <img src="https://github.com/atomlabor/d1scogs-rabbit/blob/main/d1scogs-app-view.png" alt="d1scogs Logo" width="640" height="480" style="vertical-align:middle; margin:0 0 0 18px;"/>
 </p>
 
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/E1E51DRUM)
+
 # d1scogs-rabbit
 **Deine Plattensammlung. In der Hosentasche. Immer dabei.**
 
